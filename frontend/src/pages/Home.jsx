@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Calendar, MapPin, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { socket, connectSocket, disconnectSocket } from '../services/socket';
 import './Home.css';
 
 const Home = () => {
@@ -16,28 +15,6 @@ const Home = () => {
       return res.data.data;
     }
   });
-
-  useEffect(() => {
-    connectSocket();
-
-    socket.on('event:created', (newEvent) => {
-      queryClient.setQueryData(['events'], (old) => [...(old || []), newEvent]);
-    });
-
-    socket.on('event:updated', (updatedEvent) => {
-      queryClient.setQueryData(['events'], (old) =>
-        old?.map(event => event._id === updatedEvent._id ? updatedEvent : event)
-      );
-    });
-
-    socket.on('event:deleted', (deletedId) => {
-      queryClient.setQueryData(['events'], (old) =>
-        old?.filter(event => event._id !== deletedId)
-      );
-    });
-
-    return () => disconnectSocket();
-  }, [queryClient]);
 
   if (isLoading) return (
     <div className="loading-screen">

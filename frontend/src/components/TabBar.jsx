@@ -1,10 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Calendar, Newspaper, Smartphone, Download } from 'lucide-react';
 import { usePWA } from '../hooks/usePWA';
+import { useNotification } from '../context/NotificationContext';
 import './TabBar.css';
 
 const Navigation = () => {
   const { canInstall, installPWA } = usePWA();
+  const { toast } = useNotification();
   const location = useLocation();
 
   if (location.pathname.startsWith('/mnccadmin')) {
@@ -22,7 +24,11 @@ const Navigation = () => {
     if (canInstall) {
       installPWA();
     } else {
-      alert("Pour installer MeetNova sur PC :\n1. Cliquez sur l'icône d'installation dans la barre d'adresse (en haut à droite)\n2. Ou allez dans le menu du navigateur > Installer MeetNova");
+      toast(
+        "Pour installer MeetNova : Cliquez sur l'icône d'installation dans la barre d'adresse ou le menu du navigateur.", 
+        "info",
+        6000
+      );
     }
   };
 
@@ -70,7 +76,6 @@ const Navigation = () => {
             <span>Actualités</span>
           </NavLink>
 
-          {/* Toujours visible sur PC */}
           <button onClick={handlePCInstall} className="nav-item pc-install-btn">
             <Download size={20} />
             <span>Installer l'appli</span>
