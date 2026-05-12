@@ -52,11 +52,10 @@ const Home = () => {
       <header className="hero glass anim-fade-down">
         <div className="container">
           <div className="hero-content">
-            <img src="https://res.cloudinary.com/dqueeyulc/image/upload/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png" alt="MeetNova Logo" className="logo" />
+            <img src="https://res.cloudinary.com/dqueeyulc/image/upload/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png" alt="MeetNova Logo" className="logo-header" />
             <div className="hero-text">
-              <span className="badge-new"><Sparkles size={14} /> NovaTech Loko 2026</span>
-              <h1>Découvrez le futur de l'innovation</h1>
-              <p>Rejoignez les événements les plus marquants de NovaTech LoKo et connectez-vous avec les leaders de demain.</p>
+              <h1>Bienvenu sur le centre de nos événements</h1>
+              <p>Rejoignez les événements les plus marquants de NovaTech LoKo</p>
             </div>
           </div>
         </div>
