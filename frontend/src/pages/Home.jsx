@@ -45,7 +45,7 @@ const Home = () => {
         <div className="loader-ring"></div>
         <div className="loader-core"></div>
       </div>
-      <p className="loading-text">Préparation du futur...</p>
+      <p className="loading-text">Chargement</p>
     </div>
   );
 

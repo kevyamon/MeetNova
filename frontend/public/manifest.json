@@ -1,0 +1,22 @@
+{
+  "name": "MeetNova Pro",
+  "short_name": "MeetNova",
+  "description": "Plateforme d'événements NovaTech LoKo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0c",
+  "theme_color": "#ff1e1e",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dqueeyulc/image/upload/w_192,h_192,c_scale/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://res.cloudinary.com/dqueeyulc/image/upload/w_512,h_512,c_scale/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 1rem;
+  z-index: 1000;
+  border-top: 1px solid var(--glass-border);
+  border-radius: 20px 20px 0 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 10, 12, 0.8);
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+.tab-item.active {
+  color: var(--primary);
+}
+
+.tab-item:hover {
+  color: var(--primary);
+}
+
+.install-btn {
+  position: relative;
+}
+
+.install-icon-wrapper {
+  background: var(--primary);
+  color: white;
+  padding: 8px;
+  border-radius: 12px;
+  margin-top: -30px;
+  box-shadow: 0 4px 15px rgba(255, 30, 30, 0.4);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Cacher sur desktop si nécessaire, mais ici on le garde car c'est une TabBar mobile-first */
+@media (min-width: 768px) {
+  .tab-bar {
+    max-width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 1.5rem;
+    border-radius: 35px;
+    height: 75px;
+  }
+}

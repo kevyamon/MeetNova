@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import Scan from './pages/Scan';
 import ScrollToTop from './components/ScrollToTop';
+import TabBar from './components/TabBar';
 import './styles/index.css';
 
 const queryClient = new QueryClient({
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
+            <Route path="/news" element={<div className="flex-center" style={{paddingTop: '100px'}}>Section Actualités à venir...</div>} />
             <Route path="/register/:eventId" element={<Register />} />
             
             {/* Admin Routes */}
@@ -51,6 +53,7 @@ function App() {
             />
           </Routes>
           <ScrollToTop />
+          <TabBar />
         </Router>
       </AuthProvider>
     </QueryClientProvider>
