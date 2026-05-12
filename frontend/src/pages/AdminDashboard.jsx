@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, Edit2, Trash2, Camera, Calendar, MapPin, 
   AlignLeft, X, Save, LayoutDashboard,
-  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Check
+  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
