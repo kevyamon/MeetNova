@@ -111,7 +111,14 @@
 /* ===== Page Styles ===== */
 
 .home-page {
-  padding-bottom: 4rem;
+  padding-bottom: 120px;
+}
+
+@media (min-width: 1024px) {
+  .home-page {
+    padding-left: 260px; /* Largeur de la sidebar */
+    padding-bottom: 4rem;
+  }
 }
 
 .hero {
@@ -129,6 +136,16 @@
   border-radius: 50%;
   border: 2px solid var(--primary);
   margin-bottom: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .hero .logo {
+    display: none; /* Logo déjà présent dans la sidebar sur PC */
+  }
+  
+  .hero h1 {
+    font-size: 3.5rem;
+  }
 }
 
 .hero h1 {
@@ -174,8 +191,8 @@
 
 .events-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .event-card {
@@ -190,7 +207,7 @@
 }
 
 .card-image {
-  height: 200px;
+  height: 180px;
   position: relative;
   background-color: var(--bg-dark);
 }

@@ -1,17 +1,30 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
- * Pourquoi : Empêcher l'accès aux pages admin si l'utilisateur n'est pas
- * authentifié. Redirige vers la page de login.
+ * Pourquoi : Le gardien des routes administratives. 
+ * Il vérifie non seulement l'état local, mais s'assure que le chargement 
+ * de la session est terminé avant de rendre quoi que ce soit.
  */
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
 
-  if (loading) return <div className="flex-center" style={{height: '100vh'}}>Vérification de la session...</div>;
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="premium-loader">
+          <div className="loader-ring"></div>
+          <div className="loader-core"></div>
+        </div>
+        <p className="loading-text">Vérification de sécurité...</p>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
-    return <Navigate to="/mnccadmin" replace />;
+    // On redirige vers login en gardant en mémoire la page demandée
+    return <Navigate to="/mnccadmin" state={{ from: location }} replace />;
   }
 
   return children;
