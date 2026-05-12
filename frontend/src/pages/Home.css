@@ -11,7 +11,11 @@
 }
 
 .hero .logo {
-  height: 80px;
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
   margin-bottom: 1.5rem;
 }
 

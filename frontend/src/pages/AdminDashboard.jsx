@@ -119,7 +119,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <aside className="sidebar glass">
         <div className="sidebar-header">
-          <LayoutDashboard size={24} color="var(--primary)" />
+          <img src="/src/assets/logo.png" alt="" className="sidebar-logo" />
           <span>MeetNova Admin</span>
         </div>
         <nav>

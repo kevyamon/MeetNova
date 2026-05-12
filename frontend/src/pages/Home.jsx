@@ -56,7 +56,6 @@ const Home = () => {
       <main className="container">
         <section className="feed-header">
           <h2>Événements à venir</h2>
-          <div className="badge">Temps Réel Actif</div>
         </section>
 
         <div className="events-grid">
