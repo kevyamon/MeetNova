@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, Edit2, Trash2, Camera, Calendar, MapPin, 
-  Type, AlignLeft, X, Save, LogOut, LayoutDashboard 
+  AlignLeft, X, Save, LayoutDashboard,
+  Sparkles, Hash, Clock, Info
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 import api from '../services/api';
 import './AdminDashboard.css';
 
@@ -15,10 +17,15 @@ const AdminDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { toast, confirm } = useNotification();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  
+  const [selectedType, setSelectedType] = useState(EVENT_TYPES[0]);
+  const [customType, setCustomType] = useState('');
 
   // Fetch Events
   const { data: events, isLoading } = useQuery({
@@ -36,7 +43,11 @@ const AdminDashboard = () => {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries(['events']);
+      toast("L'événement a été publié avec succès !");
       closeModal();
+    },
+    onError: (error) => {
+      toast(error.response?.data?.message || "Erreur lors de la publication", "error");
     }
   });
 
@@ -46,19 +57,27 @@ const AdminDashboard = () => {
     }),
     onSuccess: () => {
       queryClient.invalidateQueries(['events']);
+      toast("Modifications enregistrées !");
       closeModal();
+    },
+    onError: (error) => {
+      toast(error.response?.data?.message || "Erreur lors de la modification", "error");
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => api.delete(`/events/${id}`),
-    onSuccess: () => queryClient.invalidateQueries(['events'])
+    onSuccess: () => {
+      queryClient.invalidateQueries(['events']);
+      toast("Événement supprimé");
+    },
+    onError: () => toast("Erreur lors de la suppression", "error")
   });
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length + images.length > 5) {
-      alert("Maximum 5 images autorisées");
+      toast("Maximum 5 images autorisées", "warning");
       return;
     }
     setImages([...images, ...files]);
@@ -78,8 +97,11 @@ const AdminDashboard = () => {
     const data = Object.fromEntries(new FormData(e.target));
     
     Object.keys(data).forEach(key => {
-      if (key !== 'images') formData.append(key, data[key]);
+      if (key !== 'images' && key !== 'type') formData.append(key, data[key]);
     });
+    
+    const finalType = selectedType === 'Autre' ? customType : selectedType;
+    formData.append('type', finalType);
     
     images.forEach(img => formData.append('images', img));
 
@@ -94,6 +116,20 @@ const AdminDashboard = () => {
     setEditingEvent(event);
     setImages([]);
     setImagePreviews(event?.images || []);
+    
+    if (event) {
+      if (EVENT_TYPES.includes(event.type)) {
+        setSelectedType(event.type);
+        setCustomType('');
+      } else {
+        setSelectedType('Autre');
+        setCustomType(event.type);
+      }
+    } else {
+      setSelectedType(EVENT_TYPES[0]);
+      setCustomType('');
+    }
+    
     setIsModalOpen(true);
   };
 
@@ -105,140 +141,154 @@ const AdminDashboard = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ? Les participants seront notifiés par email.")) {
+    confirm("Êtes-vous sûr de vouloir supprimer cet événement ?", () => {
       deleteMutation.mutate(id);
-    }
+    });
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/mnccadmin');
-  };
-
-  if (isLoading) return <div className="flex-center">Chargement...</div>;
+  if (isLoading) return (
+    <div className="loading-screen">
+      <div className="premium-loader">
+        <div className="loader-ring"></div>
+        <div className="loader-core"></div>
+      </div>
+      <p className="loading-text">Chargement du Hub...</p>
+    </div>
+  );
 
   return (
     <div className="admin-dashboard">
-      <aside className="sidebar glass">
-        <div className="sidebar-header">
-          <img src="https://res.cloudinary.com/dqueeyulc/image/upload/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png" alt="" className="sidebar-logo" />
-          <span>MeetNova Admin</span>
-        </div>
-        <nav>
-          <button className="nav-item active"><Calendar size={20} /> Événements</button>
-          <button className="nav-item" onClick={() => navigate('/mnccadmin/scan')}><Camera size={20} /> Scan Pass</button>
-        </nav>
-        <button className="logout-btn" onClick={handleLogout}><LogOut size={20} /> Déconnexion</button>
-      </aside>
-
       <main className="admin-content">
-        <header className="content-header">
-          <h1>Gestion des Événements</h1>
-          <button className="btn-primary" onClick={() => openModal()}>
-            <Plus size={20} /> Nouvel Événement
+        <header className="content-header anim-fade-down">
+          <div>
+            <h1>Gestion des Événements</h1>
+            <p>Pilotez les activités de NovaTech LoKo</p>
+          </div>
+          <button className="btn-primary add-btn" onClick={() => openModal()}>
+            <Plus size={20} /> <span className="hide-mobile">Nouvel Événement</span>
           </button>
         </header>
 
-        <div className="events-table-container glass">
-          <table className="events-table">
-            <thead>
-              <tr>
-                <th>Événement</th>
-                <th>Type</th>
-                <th>Date & Lieu</th>
-                <th>Statut</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {events?.map(event => (
-                <tr key={event._id}>
-                  <td>
-                    <div className="event-cell">
-                      <img src={event.images?.[0] || '/placeholder.png'} alt="" />
-                      <span>{event.title}</span>
-                    </div>
-                  </td>
-                  <td><span className="badge-type">{event.type}</span></td>
-                  <td>
-                    <div className="date-cell">
-                      <span>{new Date(event.date).toLocaleDateString()}</span>
-                      <small>{event.location}</small>
-                    </div>
-                  </td>
-                  <td><span className={`status-tag ${event.status}`}>{event.status}</span></td>
-                  <td className="actions-cell">
-                    <button onClick={() => openModal(event)} title="Modifier"><Edit2 size={18} /></button>
-                    <button onClick={() => handleDelete(event._id)} title="Supprimer" className="delete"><Trash2 size={18} /></button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="events-grid-admin anim-fade-up">
+          {events?.map((event, index) => (
+            <div key={event._id} className="event-card-admin glass" style={{animationDelay: `${index * 0.1}s`}}>
+              <div className="card-banner">
+                <img src={event.images?.[0] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'} alt="" />
+                <span className="type-badge">{event.type}</span>
+              </div>
+              <div className="card-body">
+                <h3>{event.title}</h3>
+                <div className="card-meta">
+                  <span><Calendar size={14} /> {new Date(event.date).toLocaleDateString()}</span>
+                  <span><MapPin size={14} /> {event.location}</span>
+                </div>
+                <div className="card-actions">
+                  <button className="btn-icon" onClick={() => openModal(event)} title="Modifier"><Edit2 size={18} /></button>
+                  <button className="btn-icon delete" onClick={() => handleDelete(event._id)} title="Supprimer"><Trash2 size={18} /></button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
 
-      {/* Modal Création / Edition */}
+      {/* Modal Premium Overhaul */}
       {isModalOpen && (
-        <div className="modal-overlay flex-center">
+        <div className="modal-overlay">
           <div className="modal-card glass">
             <div className="modal-header">
-              <h2>{editingEvent ? 'Modifier' : 'Créer'} un Événement</h2>
-              <button onClick={closeModal}><X size={24} /></button>
+              <div>
+                <h2>{editingEvent ? 'Modifier l\'événement' : 'Nouvel Événement'}</h2>
+                <p>Configurez les détails et publiez en un clic</p>
+              </div>
+              <button className="close-btn" onClick={closeModal}><X size={20} /></button>
             </div>
             
             <form onSubmit={handleSubmit} className="modal-form">
-              <div className="form-group">
-                <label><Type size={16} /> Titre de l'événement</label>
-                <input name="title" defaultValue={editingEvent?.title} required />
-              </div>
+              <div className="form-grid">
+                {/* Colonne Gauche : Infos */}
+                <div className="form-section">
+                  <h3><Info size={18} /> Informations de base</h3>
+                  <div className="form-group">
+                    <label>Titre de l'événement</label>
+                    <input name="title" defaultValue={editingEvent?.title} placeholder="Ex: Hackaton Innov'2024" required />
+                  </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label><Calendar size={16} /> Date</label>
-                  <input type="date" name="date" defaultValue={editingEvent?.date?.split('T')[0]} required />
-                </div>
-                <div className="form-group">
-                  <label>Heure</label>
-                  <input type="time" name="time" defaultValue={editingEvent?.time} required />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Type</label>
-                  <select name="type" defaultValue={editingEvent?.type || EVENT_TYPES[0]}>
-                    {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label><MapPin size={16} /> Lieu</label>
-                  <input name="location" defaultValue={editingEvent?.location} required />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label><AlignLeft size={16} /> Description</label>
-                <textarea name="description" defaultValue={editingEvent?.description} rows="3" />
-              </div>
-
-              <div className="form-group">
-                <label><Camera size={16} /> Images (Max 5)</label>
-                <input type="file" multiple accept="image/*" onChange={handleImageChange} className="file-input" />
-                <div className="previews-grid">
-                  {imagePreviews.map((url, i) => (
-                    <div key={i} className="preview-item">
-                      <img src={url} alt="" />
-                      <button type="button" onClick={() => removeImage(i)}><X size={14} /></button>
+                  <div className="form-row" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem'}}>
+                    <div className="form-group">
+                      <label>Catégorie</label>
+                      <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
+                        {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
                     </div>
-                  ))}
+                    {selectedType === 'Autre' && (
+                      <div className="form-group anim-fade-up">
+                        <label>Précisez le type</label>
+                        <input value={customType} onChange={(e) => setCustomType(e.target.value)} placeholder="Nom du type" required />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label>Description détaillée</label>
+                    <textarea 
+                      name="description" 
+                      defaultValue={editingEvent?.description} 
+                      placeholder="Décrivez l'expérience que vont vivre les participants..." 
+                      className="premium-textarea"
+                    />
+                  </div>
+                </div>
+
+                {/* Colonne Droite : Logistique & Médias */}
+                <div className="form-section">
+                  <h3><Calendar size={18} /> Logistique & Lieu</h3>
+                  <div className="form-row" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem'}}>
+                    <div className="form-group">
+                      <label>Date</label>
+                      <input type="date" name="date" defaultValue={editingEvent?.date?.split('T')[0]} required />
+                    </div>
+                    <div className="form-group">
+                      <label>Heure</label>
+                      <input type="time" name="time" defaultValue={editingEvent?.time} required />
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label>Lieu / Salle</label>
+                    <input name="location" defaultValue={editingEvent?.location} placeholder="Ex: Amphi A, Campus Loko" required />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Galerie Photos (Max 5)</label>
+                    <label className="file-dropzone">
+                      <input type="file" multiple accept="image/*" onChange={handleImageChange} hidden />
+                      <Camera size={24} style={{marginBottom:'0.5rem'}} />
+                      <p style={{fontSize:'0.8rem', color:'var(--text-muted)'}}>Cliquez pour ajouter des photos</p>
+                    </label>
+                    <div className="previews-grid">
+                      {imagePreviews.map((url, i) => (
+                        <div key={i} className="preview-item">
+                          <img src={url} alt="" style={{width:'100%', height:'100%', objectFit:'cover'}} />
+                          <button 
+                            type="button" 
+                            onClick={() => removeImage(i)}
+                            style={{position:'absolute', top:2, right:2, background:'var(--error)', border:'none', borderRadius:'50%', color:'white', width:20, height:20, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer'}}
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="modal-actions">
-                <button type="button" className="btn-secondary" onClick={closeModal}>Annuler</button>
-                <button type="submit" className="btn-primary" disabled={createMutation.isPending || updateMutation.isPending}>
-                  <Save size={20} /> {editingEvent ? 'Mettre à jour' : 'Publier'}
+              <div className="modal-footer">
+                <button type="button" className="btn-modal secondary" onClick={closeModal}>Annuler</button>
+                <button type="submit" className="btn-modal primary" disabled={createMutation.isPending || updateMutation.isPending}>
+                  <Save size={18} />
+                  {editingEvent ? 'Mettre à jour' : 'Publier maintenant'}
                 </button>
               </div>
             </form>
