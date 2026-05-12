@@ -1,3 +1,42 @@
+/* ===== CSS Animations (replaces framer-motion) ===== */
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.anim-fade-down { animation: fadeDown 0.7s cubic-bezier(0.4,0,0.2,1) both; }
+.anim-fade-up   { animation: fadeUp  0.7s cubic-bezier(0.4,0,0.2,1) both; }
+.anim-scale-in  { animation: scaleIn 0.5s cubic-bezier(0.4,0,0.2,1) both; }
+
+/* Loading Screen */
+.loading-screen {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--text-muted);
+}
+
+.loading-rocket {
+  color: var(--primary);
+  animation: spin 1s linear infinite;
+}
+
+/* ===== Page Styles ===== */
+
 .home-page {
   padding-bottom: 4rem;
 }
@@ -24,6 +63,7 @@
   margin-bottom: 1rem;
   background: linear-gradient(to right, #fff, var(--primary));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -41,9 +81,19 @@
 }
 
 .empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  padding: 5rem 3rem;
+  gap: 1.5rem;
   border-radius: var(--radius-lg);
   border: 1px dashed var(--glass-border);
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .empty-state h3 {
@@ -160,6 +210,7 @@
   margin-bottom: 1.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

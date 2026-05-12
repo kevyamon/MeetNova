@@ -5,6 +5,7 @@ import {
   Type, AlignLeft, X, Save, LogOut, LayoutDashboard 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import './AdminDashboard.css';
 
@@ -13,6 +14,7 @@ const EVENT_TYPES = ['Conférence', 'Hackaton', 'Sortie Détente', 'Formation', 
 const AdminDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [images, setImages] = useState([]);
@@ -109,7 +111,7 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await api.post('/auth/logout');
+    await logout();
     navigate('/mnccadmin');
   };
 

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, User, LogIn } from 'lucide-react';
-import api from '../services/api';
+import { Lock, LogIn } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
@@ -9,6 +9,14 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
+
+  // Rediriger si déjà authentifié
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/mnccadmin/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,7 +24,7 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      await api.post('/auth/login', { password });
+      await login(password);
       navigate('/mnccadmin/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Mot de passe incorrect');
@@ -30,7 +38,7 @@ const AdminLogin = () => {
       <form onSubmit={handleLogin} className="login-card glass">
         <div className="login-header">
           <div className="icon-circle"><Lock size={30} /></div>
-          <h1>Accès Forteresse</h1>
+          <h1>Accès Admin</h1>
           <p>Espace réservé aux administrateurs MeetNova</p>
         </div>
 
