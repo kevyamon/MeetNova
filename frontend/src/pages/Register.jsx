@@ -30,9 +30,26 @@ const Register = () => {
 
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Scroll visibility & to top on mount
+  // Scroll visibility & to top on mount + State restoration
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Restauration de l'état après mise à jour
+    const pendingData = sessionStorage.getItem('meetnova_pending_form');
+    if (pendingData) {
+      try {
+        const parsed = JSON.parse(pendingData);
+        setFormData(prev => ({ ...prev, ...parsed }));
+        
+        // Déterminer l'étape la plus probable
+        if (parsed.email || parsed.campus) setStep(2);
+        if (parsed.filiere) setStep(3);
+        
+        sessionStorage.removeItem('meetnova_pending_form');
+      } catch (e) {
+        console.error("Erreur restauration", e);
+      }
+    }
 
     const handleScroll = () => {
       if (window.scrollY > 300) {

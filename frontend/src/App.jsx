@@ -11,6 +11,7 @@ import AdminLogin from './pages/AdminLogin';
 import Scan from './pages/Scan';
 import Navigation from './components/TabBar';
 import AdminNavigation from './components/AdminNavigation';
+import UpdateManager from './components/common/UpdateManager';
 import './styles/index.css';
 
 const queryClient = new QueryClient({
@@ -57,6 +58,7 @@ function App() {
             </Routes>
             <Navigation />
             <AdminNavigation />
+            <UpdateManager />
           </Router>
         </AuthProvider>
       </NotificationProvider>

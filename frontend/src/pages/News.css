@@ -169,6 +169,38 @@
   border-radius: 3px;
 }
 
+.mini-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.carousel-mini:hover .mini-nav-btn {
+  opacity: 1;
+}
+
+.mini-nav-btn:hover {
+  background: var(--primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.mini-nav-btn.prev { left: 0.5rem; }
+.mini-nav-btn.next { right: 0.5rem; }
+
 .news-card-body {
   padding: 1.5rem;
   flex: 1;

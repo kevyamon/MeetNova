@@ -38,13 +38,14 @@ self.addEventListener('fetch', event => {
     url.pathname === '/' || 
     url.pathname.endsWith('.html') ||
     url.pathname.endsWith('manifest.json') ||
-    url.pathname.endsWith('sw.js') ||
     url.pathname.includes('/api/')
   ) {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-store' }) // FORCE bypass cache HTTP
         .then(response => {
-          // On met à jour le cache au passage
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
           const resClone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
           return response;

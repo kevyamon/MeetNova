@@ -4,15 +4,15 @@ import {
   ArrowUp, Maximize2, FileText, Play, Download 
 } from 'lucide-react';
 
-const NewsModal = ({ isOpen, onClose, news }) => {
+const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
   const modalRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(initialIndex);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-      setCurrentMediaIndex(0);
+      setCurrentMediaIndex(initialIndex);
       setShowScrollTop(false);
     } else {
       document.body.style.overflow = '';
@@ -116,6 +116,7 @@ const NewsModal = ({ isOpen, onClose, news }) => {
 
 const NewsCard = ({ news, index }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [initialIndex, setInitialIndex] = useState(0);
   const [currentImg, setCurrentImg] = useState(0);
   
   const images = news.media?.filter(m => m.type === 'image') || [];
@@ -130,6 +131,22 @@ const NewsCard = ({ news, index }) => {
     }
     return () => clearInterval(interval);
   }, [hasMultipleImages, isModalOpen, images.length]);
+
+  const nextImg = (e) => {
+    e.stopPropagation();
+    setCurrentImg(prev => (prev + 1) % images.length);
+  };
+
+  const prevImg = (e) => {
+    e.stopPropagation();
+    setCurrentImg(prev => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleOpenModal = () => {
+    const realIndex = news.media.findIndex(m => m.url === images[currentImg]?.url);
+    setInitialIndex(realIndex >= 0 ? realIndex : 0);
+    setIsModalOpen(true);
+  };
 
   return (
     <>
@@ -146,11 +163,15 @@ const NewsCard = ({ news, index }) => {
                 />
               ))}
               {hasMultipleImages && (
-                <div className="carousel-dots">
-                  {images.map((_, i) => (
-                    <div key={i} className={`dot ${i === currentImg ? 'active' : ''}`} />
-                  ))}
-                </div>
+                <>
+                  <button className="mini-nav-btn prev" onClick={prevImg}><ChevronLeft size={16} /></button>
+                  <button className="mini-nav-btn next" onClick={nextImg}><ChevronRight size={16} /></button>
+                  <div className="carousel-dots">
+                    {images.map((_, i) => (
+                      <div key={i} className={`dot ${i === currentImg ? 'active' : ''}`} />
+                    ))}
+                  </div>
+                </>
               )}
             </div>
           ) : news.media?.[0]?.type === 'video' ? (
@@ -173,7 +194,7 @@ const NewsCard = ({ news, index }) => {
           <h3>{news.title}</h3>
           <p className="news-excerpt">{news.content}</p>
           
-          <button className="btn-read-more" onClick={() => setIsModalOpen(true)}>
+          <button className="btn-read-more" onClick={handleOpenModal}>
             Tout lire <ChevronRight size={16} />
           </button>
         </div>
@@ -183,6 +204,7 @@ const NewsCard = ({ news, index }) => {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         news={news} 
+        initialIndex={initialIndex}
       />
     </>
   );
