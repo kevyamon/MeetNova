@@ -124,9 +124,9 @@ const Scan = () => {
                 <div className="result-icon">
                   <CheckCircle size={48} />
                 </div>
-                <h2>Acces Autorise</h2>
+                <h2>Accès Autorisé</h2>
                 <div className="success-badge">
-                  <CheckCircle size={16} /> Participant verifie
+                  <CheckCircle size={16} /> Participant vérifié
                 </div>
                 <div className="info-grid">
                   <div className="info-item">
@@ -153,10 +153,10 @@ const Scan = () => {
                 <div className="result-icon">
                   <XCircle size={48} />
                 </div>
-                <h2>Acces Refuse</h2>
+                <h2>Accès Refusé</h2>
                 <p>{errorMsg}</p>
                 <button className="btn-secondary" onClick={() => setStatus('idle')}>
-                  Reessayer
+                  Réessayer
                 </button>
               </div>
             )}
