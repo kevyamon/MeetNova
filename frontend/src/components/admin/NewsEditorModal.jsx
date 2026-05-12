@@ -32,8 +32,8 @@ const NewsEditorModal = ({ isOpen, onClose, news, onSave, isSaving }) => {
     
     const newPreviews = files.map(file => ({
       url: URL.createObjectURL(file),
-      type: file.mimetype.startsWith('video/') ? 'video' : 
-            file.mimetype === 'application/pdf' ? 'pdf' : 'image',
+      type: file.type.startsWith('video/') ? 'video' : 
+            file.type === 'application/pdf' ? 'pdf' : 'image',
       file
     }));
     setPreviews([...previews, ...newPreviews]);
@@ -53,6 +53,10 @@ const NewsEditorModal = ({ isOpen, onClose, news, onSave, isSaving }) => {
     const data = new FormData();
     data.append('title', formData.title);
     data.append('content', formData.content);
+    
+    // On envoie les médias existants conservés sous forme de JSON
+    const existingMedia = previews.filter(p => !p.file);
+    data.append('existingMedia', JSON.stringify(existingMedia));
     
     media.forEach(file => {
       data.append('media', file);
@@ -111,14 +115,13 @@ const NewsEditorModal = ({ isOpen, onClose, news, onSave, isSaving }) => {
 
               <div className="previews-grid">
                 {previews.map((item, i) => (
-                  <div key={i} className="preview-item">
+                  <div key={i} className="preview-item glass">
                     {item.type === 'video' ? (
-                      <div className="flex-center" style={{height:'100%', background:'#000'}}>
-                        <Video size={20} />
-                      </div>
+                      <video src={item.url} style={{width:'100%', height:'100%', objectFit:'cover'}} />
                     ) : item.type === 'pdf' ? (
-                      <div className="flex-center" style={{height:'100%', background:'#222'}}>
-                        <FileIcon size={20} />
+                      <div className="pdf-preview-box">
+                        <FileIcon size={24} />
+                        <span>PDF</span>
                       </div>
                     ) : (
                       <img src={item.url} alt="" style={{width:'100%', height:'100%', objectFit:'cover'}} />
@@ -127,6 +130,7 @@ const NewsEditorModal = ({ isOpen, onClose, news, onSave, isSaving }) => {
                       type="button" 
                       onClick={() => removeMedia(i)}
                       className="remove-media-btn"
+                      title="Supprimer"
                     >
                       <X size={12} />
                     </button>
@@ -146,6 +150,18 @@ const NewsEditorModal = ({ isOpen, onClose, news, onSave, isSaving }) => {
         </form>
       </div>
       <style>{`
+        .pdf-preview-box {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.05);
+          gap: 0.5rem;
+          font-size: 0.7rem;
+          color: var(--text-dim);
+        }
+
         .remove-media-btn {
           position: absolute;
           top: 2px;
@@ -160,6 +176,14 @@ const NewsEditorModal = ({ isOpen, onClose, news, onSave, isSaving }) => {
           align-items: center;
           justify-content: center;
           cursor: pointer;
+          z-index: 5;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+          transition: all 0.2s;
+        }
+
+        .remove-media-btn:hover {
+          transform: scale(1.1);
+          background: #ff0000;
         }
       `}</style>
     </div>

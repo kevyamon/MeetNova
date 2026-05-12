@@ -31,7 +31,7 @@ const News = () => {
     };
   }, [queryClient]);
 
-  const { data: news, isLoading, error, refetch } = useQuery({
+  const { data: news, isLoading, isRefetching, error, refetch } = useQuery({
     queryKey: ['news'],
     queryFn: async () => {
       const res = await api.get('/news');
@@ -61,8 +61,8 @@ const News = () => {
             <Search size={18} />
             <input type="text" placeholder="Rechercher une actualité..." />
           </div>
-          <button className="btn-refresh" onClick={() => refetch()} title="Actualiser">
-            <RefreshCcw size={18} />
+          <button className="btn-refresh" onClick={() => refetch()} title="Actualiser" disabled={isRefetching}>
+            <RefreshCcw size={18} className={isRefetching ? 'spinning' : ''} />
           </button>
         </div>
 
@@ -74,8 +74,8 @@ const News = () => {
             </div>
             <h2>Oups ! Connexion interrompue</h2>
             <p>Nous n'avons pas pu récupérer les dernières nouvelles. Vérifiez votre connexion internet.</p>
-            <button className="btn-primary" onClick={() => refetch()}>
-              <RefreshCcw size={18} /> Réessayer
+            <button className="btn-primary" onClick={() => refetch()} disabled={isRefetching}>
+              <RefreshCcw size={18} className={isRefetching ? 'spinning' : ''} /> {isRefetching ? 'Reconnexion...' : 'Réessayer'}
             </button>
           </div>
         ) : news && news.length > 0 ? (
