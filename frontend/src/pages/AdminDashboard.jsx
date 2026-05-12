@@ -170,25 +170,33 @@ const AdminDashboard = () => {
         </header>
 
         <div className="events-grid-admin anim-fade-up">
-          {events?.map((event, index) => (
-            <div key={event._id} className="event-card-admin glass" style={{animationDelay: `${index * 0.1}s`}}>
-              <div className="card-banner">
-                <img src={event.images?.[0] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'} alt="" />
-                <span className="type-badge">{event.type}</span>
-              </div>
-              <div className="card-body">
-                <h3>{event.title}</h3>
-                <div className="card-meta">
-                  <span><Calendar size={14} /> {new Date(event.date).toLocaleDateString()}</span>
-                  <span><MapPin size={14} /> {event.location}</span>
+          {events && events.length > 0 ? (
+            events.map((event, index) => (
+              <div key={event._id} className="event-card-admin glass" style={{animationDelay: `${index * 0.1}s`}}>
+                <div className="card-banner">
+                  <img src={event.images?.[0] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80'} alt="" />
+                  <span className="type-badge">{event.type}</span>
                 </div>
-                <div className="card-actions">
-                  <button className="btn-icon" onClick={() => openModal(event)} title="Modifier"><Edit2 size={18} /></button>
-                  <button className="btn-icon delete" onClick={() => handleDelete(event._id)} title="Supprimer"><Trash2 size={18} /></button>
+                <div className="card-body">
+                  <h3>{event.title}</h3>
+                  <div className="card-meta">
+                    <span><Calendar size={14} /> {new Date(event.date).toLocaleDateString()}</span>
+                    <span><MapPin size={14} /> {event.location}</span>
+                  </div>
+                  <div className="card-actions">
+                    <button className="btn-icon" onClick={() => openModal(event)} title="Modifier"><Edit2 size={18} /></button>
+                    <button className="btn-icon delete" onClick={() => handleDelete(event._id)} title="Supprimer"><Trash2 size={18} /></button>
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="empty-state glass" style={{gridColumn: '1 / -1', textAlign: 'center', padding: '4rem'}}>
+              <Calendar size={48} style={{opacity: 0.3, marginBottom: '1rem'}} />
+              <h3>Aucun événement pour le moment</h3>
+              <p style={{color: 'var(--text-muted)'}}>Cliquez sur "Nouvel Événement" pour commencer.</p>
             </div>
-          ))}
+          )}
         </div>
       </main>
 
