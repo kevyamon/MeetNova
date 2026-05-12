@@ -6,43 +6,8 @@ import api from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 import './Register.css';
 
-const NIVEAUX = ['BTS1', 'BTS2', 'Licence 1', 'Licence 2', 'Licence 3', 'Master 1', 'Master 2'];
-
-const NiveauPickerModal = ({ isOpen, onClose, value, onSelect }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="custom-picker-overlay" onClick={onClose}>
-      <div className="custom-picker-modal" onClick={e => e.stopPropagation()}>
-        <h3>Choisir ton niveau d'étude</h3>
-        <div className="category-list">
-          {NIVEAUX.map(n => (
-            <button 
-              key={n} 
-              className={`category-btn ${value === n ? 'selected' : ''}`}
-              onClick={() => { onSelect(n); onClose(); }}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const FullScreenLoader = () => (
-  <div className="register-loader-overlay">
-    <div className="loader-visual">
-      <div className="loader-ring-outer"></div>
-      <div className="loader-ring-inner"></div>
-    </div>
-    <div className="loader-content">
-      <h2>Traitement en cours...</h2>
-      <p>Nous préparons votre billet personnalisé</p>
-    </div>
-  </div>
-);
+import { FullScreenLoader } from '../components/common/Loaders';
+import NiveauPickerModal, { NIVEAUX } from '../components/registration/NiveauPickerModal';
 
 const Register = () => {
   const { eventId } = useParams();

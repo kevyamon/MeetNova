@@ -83,15 +83,13 @@ const Home = () => {
                   ) : (
                     <div className="placeholder-img flex-center">MeetNova</div>
                   )}
-                  <div className="card-overlay">
-                    <span className="event-type-badge">{event.type}</span>
-                  </div>
                 </div>
 
                 <div className="card-body">
                   <div className="card-meta">
                     <span className="meta-item"><Calendar size={14} /> {new Date(event.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}</span>
                     <span className="meta-item"><Clock size={14} /> {event.time}</span>
+                    <span className="event-type-badge-inline">{event.type}</span>
                   </div>
                   
                   <h3>{event.title}</h3>
