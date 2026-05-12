@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
-import './Notification.css';
+import './NotificationContext.css';
 
 const NotificationContext = createContext();
 
