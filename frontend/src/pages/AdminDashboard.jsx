@@ -150,9 +150,8 @@ const AdminDashboard = () => {
     <div className="loading-screen">
       <div className="premium-loader">
         <div className="loader-ring"></div>
-        <div className="loader-core"></div>
       </div>
-      <p className="loading-text">Chargement du Hub...</p>
+      <p>Initialisation du Hub...</p>
     </div>
   );
 
@@ -162,10 +161,10 @@ const AdminDashboard = () => {
         <header className="content-header anim-fade-down">
           <div>
             <h1>Gestion des Événements</h1>
-            <p>Pilotez les activités de NovaTech LoKo</p>
+            <p>Pilotez NovaTech LoKo</p>
           </div>
           <button className="btn-primary add-btn" onClick={() => openModal()}>
-            <Plus size={20} /> <span className="hide-mobile">Nouvel Événement</span>
+            <Plus size={20} /> <span className="hide-mobile">Nouveau</span>
           </button>
         </header>
 
