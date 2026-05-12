@@ -1,42 +1,51 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
+import api, { setAccessToken } from '../services/api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Vérifier la session au chargement
+  // Vérifier la session au chargement (via refresh pour obtenir un access token)
   useEffect(() => {
-    checkAuth();
+    const initAuth = async () => {
+      try {
+        // Tenter d'obtenir un access token via le cookie refresh
+        const { data } = await api.get('/auth/refresh');
+        setAccessToken(data.accessToken);
+        
+        // Puis vérifier le statut complet
+        const statusRes = await api.get('/auth/status');
+        setIsAuthenticated(true);
+        setAdmin(statusRes.data.admin);
+      } catch (error) {
+        setIsAuthenticated(false);
+        setAdmin(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initAuth();
   }, []);
 
-  const checkAuth = async () => {
-    try {
-      // On tente d'accéder à une route protégée simple ou une route /auth/me si elle existe
-      // Pour l'instant on utilise le fait que l'API renverra 401 si non authentifié
-      await api.get('/auth/status'); // On va supposer que cette route existe ou on va la créer
-      setIsAuthenticated(true);
-    } catch (error) {
-      setIsAuthenticated(false);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = async (password) => {
-    await api.post('/auth/login', { password });
+  const login = async (email, password) => {
+    const { data } = await api.post('/auth/login', { email, password });
+    setAccessToken(data.accessToken);
     setIsAuthenticated(true);
+    setAdmin(data.admin);
   };
 
   const logout = async () => {
     await api.post('/auth/logout');
+    setAccessToken(null);
     setIsAuthenticated(false);
+    setAdmin(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, loading, login, logout, checkAuth }}>
+    <AuthContext.Provider value={{ isAuthenticated, admin, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

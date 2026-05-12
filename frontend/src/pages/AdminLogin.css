@@ -65,3 +65,11 @@
   font-size: 0.85rem;
   text-align: center;
 }
+
+.login-note {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+  line-height: 1.4;
+}
