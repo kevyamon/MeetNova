@@ -34,6 +34,17 @@ const Register = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
+    // Initial replace state
+    if (!window.history.state?.registerStep) {
+      window.history.replaceState({ registerStep: 1 }, '');
+    }
+
+    const handlePopState = (e) => {
+      const stateStep = e.state?.registerStep || 1;
+      setStep(stateStep);
+    };
+    window.addEventListener('popstate', handlePopState);
+
     // Restauration de l'état après mise à jour
     const pendingData = sessionStorage.getItem('meetnova_pending_form');
     if (pendingData) {
@@ -41,9 +52,14 @@ const Register = () => {
         const parsed = JSON.parse(pendingData);
         setFormData(prev => ({ ...prev, ...parsed }));
         
-        // Déterminer l'étape la plus probable
-        if (parsed.email || parsed.campus) setStep(2);
-        if (parsed.filiere) setStep(3);
+        let restoredStep = 1;
+        if (parsed.filiere) restoredStep = 3;
+        else if (parsed.email || parsed.campus) restoredStep = 2;
+        
+        if (restoredStep > 1) {
+          setStep(restoredStep);
+          window.history.replaceState({ registerStep: restoredStep }, '');
+        }
         
         sessionStorage.removeItem('meetnova_pending_form');
       } catch (e) {
@@ -60,7 +76,10 @@ const Register = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -101,13 +120,14 @@ const Register = () => {
     if (step === 1 && (!formData.nom || !formData.prenoms)) return toast("Merci de remplir ton nom et prénom", "info");
     if (step === 2 && (!formData.email || !formData.campus)) return toast("L'email et le campus sont requis", "info");
     
-    setStep(s => s + 1);
+    const next = step + 1;
+    setStep(next);
+    window.history.pushState({ registerStep: next }, '');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const prevStep = () => {
-    setStep(s => s - 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.history.back();
   };
 
   const handleSubmit = (e) => {

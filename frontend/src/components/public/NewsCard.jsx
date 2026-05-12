@@ -18,7 +18,34 @@ const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
     } else {
       document.body.style.overflow = '';
     }
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen, initialIndex]);
+
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      window.history.pushState({ modalOpen: true }, '');
+      
+      const handlePopState = () => {
+        onCloseRef.current();
+      };
+      
+      window.addEventListener('popstate', handlePopState);
+      
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+        if (window.history.state?.modalOpen) {
+          window.history.back();
+        }
+      };
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const textEl = textSectionRef.current;
