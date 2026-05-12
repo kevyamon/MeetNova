@@ -39,9 +39,10 @@
   animation: pulse-ring 2s infinite;
 }
 
-.sparkle-icon {
+.rocket-icon {
   color: var(--primary);
   filter: drop-shadow(0 0 10px rgba(255, 30, 30, 0.5));
+  transform: rotate(-15deg);
 }
 
 .update-modal h2 {

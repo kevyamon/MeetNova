@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RefreshCcw, Sparkles, X } from 'lucide-react';
+import { RefreshCcw, Rocket, X } from 'lucide-react';
 import './UpdateManager.css';
 
 const UpdateManager = () => {
@@ -39,19 +39,16 @@ const UpdateManager = () => {
       <div className="update-modal glass anim-scale-in">
         <div className="update-icon-wrapper">
           <div className="update-ring"></div>
-          <Sparkles size={32} className="sparkle-icon" />
+          <Rocket size={32} className="rocket-icon" />
         </div>
         
         <h2>Nouvelle Version !</h2>
         <p>Une mise à jour est prête avec de nouvelles fonctionnalités et corrections. Elle a déjà été téléchargée pour vous.</p>
         
         <div className="update-actions">
-          <button className="btn-update-cancel" onClick={() => setShowModal(false)}>
-            Plus tard
-          </button>
-          <button className="btn-update-confirm" onClick={handleUpdateClick}>
+          <button className="btn-update-confirm" onClick={handleUpdateClick} style={{ flex: 1 }}>
             <RefreshCcw size={18} />
-            Mettre à jour
+            Mettre à jour maintenant
           </button>
         </div>
       </div>
