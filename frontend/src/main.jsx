@@ -17,6 +17,7 @@ if ('serviceWorker' in navigator && typeof __GIT_HASH__ !== 'undefined') {
 
       if (savedHash && savedHash !== __GIT_HASH__) {
         console.log('🚀 Nouveau déploiement détecté !');
+        sessionStorage.setItem('meetnova_git_hash', __GIT_HASH__);
         sessionStorage.setItem('meetnova_update_reload', 'true');
         sessionStorage.setItem('meetnova_last_path', window.location.pathname);
         const inputs = document.querySelectorAll('input, textarea');

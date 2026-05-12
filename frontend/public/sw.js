@@ -33,6 +33,9 @@ self.addEventListener('fetch', event => {
   
   if (event.request.method === 'HEAD') return;
   
+  // Ignorer les requêtes non-HTTP (comme chrome-extension://)
+  if (!url.protocol.startsWith('http')) return;
+  
   if (
     event.request.mode === 'navigate' || 
     url.pathname === '/' || 
