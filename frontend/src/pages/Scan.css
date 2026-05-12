@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: var(--bg-darker);
   padding: 2rem 1rem;
-  padding-bottom: 100px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 1024px) {
@@ -204,12 +204,27 @@
 .scan-footer-note {
   margin-top: 2rem;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 0.8rem;
   color: var(--text-dim);
-  font-size: 0.85rem;
-  text-align: center;
-  justify-content: center;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.scan-footer-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.scan-footer-note span {
+  word-break: break-word;
+}
+
+@media (max-width: 400px) {
+  .scan-footer-note {
+    font-size: 0.75rem;
+  }
 }
 
 .icon-spin {

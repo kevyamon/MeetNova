@@ -14,6 +14,13 @@ const AdminNavigation = () => {
     return null;
   }
 
+  const handleNavClick = (e, path) => {
+    if (location.pathname === path) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handleLogout = () => {
     confirm("Voulez-vous vraiment vous déconnecter ?", async () => {
       await logout();
@@ -26,12 +33,12 @@ const AdminNavigation = () => {
       {/* Mobile TabBar : Uniquement les icônes essentielles */}
       <nav className="mobile-tab-bar admin-nav glass">
         <div className="nav-items">
-          <NavLink to="/mnccadmin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/mnccadmin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/dashboard')}>
             <LayoutDashboard size={24} />
             <span>Dashboard</span>
           </NavLink>
 
-          <NavLink to="/mnccadmin/scan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/mnccadmin/scan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/scan')}>
             <Camera size={24} />
             <span>Scanner</span>
           </NavLink>
@@ -51,12 +58,12 @@ const AdminNavigation = () => {
         </div>
 
         <div className="nav-items">
-          <NavLink to="/mnccadmin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/mnccadmin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/dashboard')}>
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
           </NavLink>
 
-          <NavLink to="/mnccadmin/scan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink to="/mnccadmin/scan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/scan')}>
             <Camera size={20} />
             <span>Scanner</span>
           </NavLink>

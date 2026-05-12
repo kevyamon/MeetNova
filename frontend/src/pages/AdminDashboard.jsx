@@ -193,7 +193,7 @@ const AdminDashboard = () => {
             <div className="empty-state glass" style={{gridColumn: '1 / -1', textAlign: 'center', padding: '4rem'}}>
               <Calendar size={48} style={{opacity: 0.3, marginBottom: '1rem'}} />
               <h3>Aucun événement pour le moment</h3>
-              <p style={{color: 'var(--text-muted)'}}>Cliquez sur "Nouvel Événement" pour commencer.</p>
+              <p style={{color: 'var(--text-muted)'}}>Cliquez sur "Nouveau" pour commencer.</p>
             </div>
           )}
         </div>

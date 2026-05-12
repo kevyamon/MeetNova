@@ -111,12 +111,12 @@
 /* ===== Page Styles ===== */
 
 .home-page {
-  padding-bottom: 120px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 1024px) {
   .home-page {
-    padding-left: 260px; /* Largeur de la sidebar */
+    padding-left: 260px;
     padding-bottom: 4rem;
   }
 }
