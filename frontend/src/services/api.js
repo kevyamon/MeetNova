@@ -8,6 +8,14 @@ const api = axios.create({
 // Variable pour éviter les boucles infinies de rafraîchissement
 let isRefreshing = false;
 
+export const setAccessToken = (token) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
