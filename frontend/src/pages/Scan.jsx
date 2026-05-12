@@ -27,13 +27,23 @@ const Scan = () => {
     setResult(null);
 
     try {
-      const res = await api.post('/scan/validate', { uuid });
+      // Correction de la route et de la méthode pour correspondre au backend
+      const res = await api.put(`/scan/validate/${uuid}`);
       setResult(res.data.data);
       setStatus('success');
-      toast("Pass validé avec succès !", "success");
+      toast("Pass validé avec succès ! Félicitations.", "success");
       setUuid('');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Code invalide ou déjà utilisé';
+      let msg = "Une erreur est survenue lors de la validation.";
+      
+      if (err.response?.status === 404) {
+        msg = "Ce pass est introuvable. Vérifiez le code.";
+      } else if (err.response?.status === 400) {
+        msg = "Ce pass a déjà été utilisé ou est invalide.";
+      } else if (err.response?.data?.message) {
+        msg = err.response.data.message;
+      }
+
       setErrorMsg(msg);
       setStatus('error');
       toast(msg, "error");

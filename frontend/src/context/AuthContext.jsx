@@ -5,55 +5,55 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      setLoading(true);
-      try {
-        const { data } = await api.get('/auth/refresh');
-        if (data?.accessToken) {
-          setAccessToken(data.accessToken);
-          const statusRes = await api.get('/auth/status');
+      const storedToken = localStorage.getItem('accessToken');
+      if (storedToken) {
+        setAccessToken(storedToken);
+        try {
+          const res = await api.get('/auth/refresh');
+          const newToken = res.data.accessToken;
+          setAccessToken(newToken);
           setIsAuthenticated(true);
-          setAdmin(statusRes.data.admin);
+        } catch (err) {
+          localStorage.removeItem('accessToken');
+          setAccessToken(null);
+          setIsAuthenticated(false);
         }
-      } catch (error) {
-        setAccessToken(null);
-        setIsAuthenticated(false);
-        setAdmin(null);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
+
     initAuth();
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
-    setAccessToken(data.accessToken);
-    setIsAuthenticated(true);
-    setAdmin(data.admin);
+    const res = await api.post('/auth/login', { email, password });
+    if (res.data.accessToken) {
+      setAccessToken(res.data.accessToken);
+      setIsAuthenticated(true);
+      return true;
+    }
+    return false;
   };
 
   const logout = async () => {
     try {
       await api.post('/auth/logout');
     } finally {
+      localStorage.removeItem('accessToken');
       setAccessToken(null);
       setIsAuthenticated(false);
-      setAdmin(null);
-      window.location.href = '/mnccadmin';
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, admin, loading, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Vérifie bien que cet export est présent en bas !
 export const useAuth = () => useContext(AuthContext);

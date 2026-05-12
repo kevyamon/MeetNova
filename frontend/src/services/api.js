@@ -1,19 +1,43 @@
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://meetnova-backend.onrender.com/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://meetnova-backend.onrender.com/api',
+  baseURL: API_URL,
   withCredentials: true,
 });
 
-// Variable pour éviter les boucles infinies de rafraîchissement
-let isRefreshing = false;
-
-export const setAccessToken = (token) => {
+const getStoredToken = () => localStorage.getItem('accessToken');
+const setStoredToken = (token) => {
   if (token) {
+    localStorage.setItem('accessToken', token);
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
+    localStorage.removeItem('accessToken');
     delete api.defaults.headers.common['Authorization'];
   }
+};
+
+export const setAccessToken = setStoredToken;
+
+api.interceptors.request.use((config) => {
+  const token = getStoredToken();
+  if (token && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const subscribeTokenRefresh = (callback) => {
+  refreshSubscribers.push(callback);
+};
+
+const onRefreshed = (token) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
 };
 
 api.interceptors.response.use(
@@ -21,21 +45,30 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Si on a une erreur 401 et que ce n'est pas déjà une tentative de refresh
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url.includes('/auth/refresh')) {
-      
-      if (isRefreshing) return Promise.reject(error); // Évite les appels multiples
-      
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(api(originalRequest));
+          });
+        });
+      }
+
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        await api.post('/auth/refresh');
+        const res = await api.get('/auth/refresh');
+        const newToken = res.data.accessToken;
+        setStoredToken(newToken);
+        onRefreshed(newToken);
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         isRefreshing = false;
         return api(originalRequest);
       } catch (refreshError) {
         isRefreshing = false;
-        // Si le refresh échoue, on ne boucle pas, on redirige juste si on est sur une page protégée
+        setStoredToken(null);
         if (window.location.pathname.startsWith('/mnccadmin/')) {
           window.location.href = '/mnccadmin';
         }
