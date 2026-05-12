@@ -1,51 +1,78 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Send, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Send, CheckCircle, ChevronRight, GraduationCap, Building } from 'lucide-react';
 import api from '../services/api';
+import { useNotification } from '../context/NotificationContext';
 import './Register.css';
 
-const CAMPUSES = ['Abidjan', 'Bouaké', 'Yamoussoukro', 'Daloa', 'Korhogo'];
 const NIVEAUX = ['BTS1', 'BTS2', 'Licence 1', 'Licence 2', 'Licence 3', 'Master 1', 'Master 2'];
+
+const NiveauPickerModal = ({ isOpen, onClose, value, onSelect }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="custom-picker-overlay" onClick={onClose}>
+      <div className="custom-picker-modal" onClick={e => e.stopPropagation()}>
+        <h3>Choisir ton niveau d'étude</h3>
+        <div className="category-list">
+          {NIVEAUX.map(n => (
+            <button 
+              key={n} 
+              className={`category-btn ${value === n ? 'selected' : ''}`}
+              onClick={() => { onSelect(n); onClose(); }}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Register = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { toast } = useNotification();
   const [submitted, setSubmitted] = useState(false);
+  const [showNiveauPicker, setShowNiveauPicker] = useState(false);
   
   const [formData, setFormData] = useState({
     nom: '',
     prenoms: '',
     email: '',
-    campus: CAMPUSES[0],
+    campus: '',
     niveau_etude: NIVEAUX[0],
     filiere: '',
     event: eventId
   });
 
-  // Fetch event details to show on form
-  const { data: event } = useQuery({
-    queryKey: ['event', eventId],
-    queryFn: async () => {
-      const res = await api.get(`/events`); // En réalité on devrait avoir une route GET /events/:id
-      // Pour l'instant on filtre dans la liste
-      return res.data.data.find(e => e._id === eventId);
-    }
-  });
-
   const mutation = useMutation({
     mutationFn: (data) => api.post('/attendees/register', data),
-    onSuccess: () => setSubmitted(true),
+    onSuccess: () => {
+      setSubmitted(true);
+      toast("Inscription validée ! À bientôt.", "success");
+    },
     onError: (error) => {
-      alert(error.response?.data?.message || "Une erreur est survenue lors de l'inscription.");
+      const msg = error.response?.data?.message || "Une erreur est survenue lors de l'inscription.";
+      toast(msg, "error");
     }
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let finalValue = value;
+    
+    if (name === 'filiere') {
+      finalValue = value.toUpperCase().replace(/[^A-Z]/g, '');
+    } else if (name === 'campus') {
+      finalValue = value.toUpperCase();
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'filiere' ? value.toUpperCase().replace(/[^A-Z]/g, '') : value
+      [name]: finalValue
     }));
   };
 
@@ -69,22 +96,16 @@ const Register = () => {
 
   return (
     <div className="register-page">
-      <div className="container">
+      <div className="container-small">
         <Link to="/" className="back-link"><ArrowLeft size={20} /> Retour</Link>
         
-        <div className="register-container">
-          <div className="event-info-sidebar glass">
-            {event?.images?.[0] && <img src={event.images[0]} alt={event.title} />}
-            <div className="info-text">
-              <span className="badge-type">{event?.type}</span>
-              <h1>{event?.title}</h1>
-              <p>{event?.description}</p>
+        <div className="register-container-v2">
+          <form onSubmit={handleSubmit} className="register-form glass anim-scale-in">
+            <div className="form-header">
+              <div className="icon-circle"><GraduationCap size={32} /></div>
+              <h2>Formulaire d'Inscription</h2>
+              <p>Remplis tes informations pour recevoir ton pass.</p>
             </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="register-form glass">
-            <h2>Formulaire d'Inscription</h2>
-            <p className="subtitle">Remplis tes informations pour recevoir ton pass.</p>
 
             <div className="form-grid">
               <div className="form-group">
@@ -105,20 +126,29 @@ const Register = () => {
             <div className="form-grid">
               <div className="form-group">
                 <label>Campus</label>
-                <select name="campus" value={formData.campus} onChange={handleChange}>
-                  {CAMPUSES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <div className="input-with-icon">
+                  <Building size={18} className="input-icon" />
+                  <input 
+                    type="text" 
+                    name="campus" 
+                    value={formData.campus} 
+                    onChange={handleChange} 
+                    required 
+                    placeholder="Ex: LOKO, ABC..." 
+                  />
+                </div>
               </div>
               <div className="form-group">
                 <label>Niveau d'étude</label>
-                <select name="niveau_etude" value={formData.niveau_etude} onChange={handleChange}>
-                  {NIVEAUX.map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
+                <div className="custom-input-trigger" onClick={() => setShowNiveauPicker(true)}>
+                  <span>{formData.niveau_etude}</span>
+                  <ChevronRight size={18} className="trigger-arrow" />
+                </div>
               </div>
             </div>
 
             <div className="form-group">
-              <label>Filière (Abrégée, Majuscules)</label>
+              <label>Filière (Abrégée)</label>
               <input 
                 type="text" 
                 name="filiere" 
@@ -128,7 +158,7 @@ const Register = () => {
                 placeholder="Ex: IDA, RIT, MAGE..."
                 maxLength={10}
               />
-              <small>Seules les lettres en majuscules sont acceptées.</small>
+              <small>La filière sera automatiquement mise en majuscule.</small>
             </div>
 
             <button type="submit" className="btn-primary w-full" disabled={mutation.isPending}>
@@ -137,6 +167,13 @@ const Register = () => {
           </form>
         </div>
       </div>
+
+      <NiveauPickerModal 
+        isOpen={showNiveauPicker}
+        onClose={() => setShowNiveauPicker(false)}
+        value={formData.niveau_etude}
+        onSelect={(n) => setFormData(p => ({ ...p, niveau_etude: n }))}
+      />
     </div>
   );
 };
