@@ -7,6 +7,10 @@ const UpdateManager = () => {
 
   useEffect(() => {
     const handleUpdate = () => {
+      if (sessionStorage.getItem('meetnova_update_reload') === 'true') {
+        sessionStorage.removeItem('meetnova_update_reload');
+        return;
+      }
       setShowModal(true);
     };
 
@@ -15,10 +19,9 @@ const UpdateManager = () => {
   }, []);
 
   const handleUpdateClick = () => {
-    // 1. Sauvegarder l'état actuel (URL et formulaires potentiels)
+    sessionStorage.setItem('meetnova_update_reload', 'true');
     sessionStorage.setItem('meetnova_last_path', window.location.pathname);
     
-    // On peut aussi tenter de sauvegarder les inputs des formulaires
     const inputs = document.querySelectorAll('input, textarea');
     const formData = {};
     inputs.forEach(input => {
@@ -28,7 +31,6 @@ const UpdateManager = () => {
     });
     sessionStorage.setItem('meetnova_pending_form', JSON.stringify(formData));
 
-    // 2. Recharger
     window.location.reload();
   };
 
