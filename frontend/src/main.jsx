@@ -11,35 +11,39 @@ createRoot(document.getElementById('root')).render(
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then(registration => {
-      console.log('SW registered: ', registration);
+      console.log('🚀 MeetNova SW Ready');
       
-      // Vérifier les mises à jour toutes les 60 secondes
-      setInterval(() => {
+      // Vérification ULTRA-RAPIDE des mises à jour (toutes les 3 secondes)
+      // C'est ce qui permet de détecter un nouveau push Vercel presque instantanément
+      const updateCheckInterval = setInterval(() => {
         registration.update();
-      }, 60000);
+      }, 3000);
+
+      // Vérifier aussi quand l'utilisateur revient sur l'onglet
+      window.addEventListener('focus', () => {
+        registration.update();
+      });
 
       registration.onupdatefound = () => {
         const installingWorker = registration.installing;
         if (installingWorker) {
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // Nouveau contenu disponible, le SW a fini de s'installer
-              // On laisse le SW skipWaiting (déjà dans sw.js) et on reload via controllerchange
+              console.log('✨ Nouvelle version détectée, mise à jour...');
+              // Le skipWaiting() dans sw.js fera le reste
             }
           };
         }
       };
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError);
-    });
+    }).catch(err => console.error('SW Error:', err));
   });
 
-  // Recharger la page quand le nouveau Service Worker prend le contrôle
+  // Recharger AUTOMATIQUEMENT dès que le nouveau SW prend le contrôle
   let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!refreshing) {
-      window.location.reload();
       refreshing = true;
+      window.location.reload();
     }
   });
 }

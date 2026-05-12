@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meetnova-v2'; // Version update
+const CACHE_NAME = 'meetnova-v3'; // Increment version
 const urlsToCache = [
   '/',
   '/index.html',
@@ -6,7 +6,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Force update
+  self.skipWaiting(); 
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -19,7 +19,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName); // Clean old cache
+            return caches.delete(cacheName);
           }
         })
       );
@@ -29,14 +29,38 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Strategy: Network First for HTML and API calls, Cache First for others (images, etc)
-  if (event.request.mode === 'navigate' || event.request.url.includes('/api/')) {
+  const url = new URL(event.request.url);
+  
+  // STRATÉGIE : Network First pour tout ce qui change souvent (HTML, API, Manifest, SW)
+  // Cache First uniquement pour les ressources statiques lourdes (Images, Fonts)
+  if (
+    event.request.mode === 'navigate' || 
+    url.pathname === '/' || 
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('manifest.json') ||
+    url.pathname.endsWith('sw.js') ||
+    url.pathname.includes('/api/')
+  ) {
     event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
+      fetch(event.request)
+        .then(response => {
+          // On met à jour le cache au passage
+          const resClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
     );
   } else {
+    // Cache First pour le reste
     event.respondWith(
-      caches.match(event.request).then(response => response || fetch(event.request))
+      caches.match(event.request).then(response => {
+        return response || fetch(event.request).then(res => {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+          return res;
+        });
+      })
     );
   }
 });
