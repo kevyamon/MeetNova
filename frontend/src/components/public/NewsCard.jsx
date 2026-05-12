@@ -41,10 +41,9 @@ const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
 
   if (!isOpen || !news) return null;
 
-  const handleScrollToTop = () => {
-    if (modalRef.current) {
-      modalRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  const handleScrollToTop = (e) => {
+    e.stopPropagation();
+    modalRef.current?.querySelector('.modal-text-section').scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const nextMedia = () => {
