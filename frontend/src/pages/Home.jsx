@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Calendar, MapPin, ArrowRight, Rocket } from 'lucide-react';
+import { Calendar, MapPin, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { socket, connectSocket, disconnectSocket } from '../services/socket';
@@ -41,8 +41,11 @@ const Home = () => {
 
   if (isLoading) return (
     <div className="loading-screen">
-      <div className="loading-rocket"><Rocket size={40} /></div>
-      <p>Chargement du futur...</p>
+      <div className="premium-loader">
+        <div className="loader-ring"></div>
+        <div className="loader-core"></div>
+      </div>
+      <p className="loading-text">Préparation du futur...</p>
     </div>
   );
 
@@ -94,8 +97,9 @@ const Home = () => {
             ))
           ) : (
             <div className="empty-state glass anim-fade-up">
-              <div className="empty-icon-wrapper">
-                <Rocket size={60} className="floating-icon" />
+              <div className="empty-visual">
+                <div className="pulse-ring"></div>
+                <Calendar size={60} className="empty-icon" />
               </div>
               <h3>C'est un peu calme ici...</h3>
               <p>Aucun événement n'est prévu pour le moment. Reviens bientôt pour ne rien rater !</p>
