@@ -55,7 +55,7 @@ const Home = () => {
             <img src="https://res.cloudinary.com/dqueeyulc/image/upload/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png" alt="MeetNova Logo" className="logo-header" />
             <div className="hero-text">
               <h1>Bienvenue sur notre centre d'événements</h1>
-              <p>Rejoignez les événements les plus marquants de NovaTech LoKo</p>
+              <p>Rejoignez les événements les plus marquants de <span className="nowrap">NovaTech LoKo</span></p>
             </div>
           </div>
         </div>

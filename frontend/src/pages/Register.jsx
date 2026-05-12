@@ -31,6 +31,19 @@ const NiveauPickerModal = ({ isOpen, onClose, value, onSelect }) => {
   );
 };
 
+const FullScreenLoader = () => (
+  <div className="register-loader-overlay">
+    <div className="loader-visual">
+      <div className="loader-ring-outer"></div>
+      <div className="loader-ring-inner"></div>
+    </div>
+    <div className="loader-content">
+      <h2>Traitement en cours...</h2>
+      <p>Nous préparons votre billet personnalisé</p>
+    </div>
+  </div>
+);
+
 const Register = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
@@ -96,7 +109,9 @@ const Register = () => {
 
   return (
     <div className="register-page">
-      <div className="container-small">
+      {mutation.isPending && <FullScreenLoader />}
+      
+      <div className="container-register">
         <Link to="/" className="back-link"><ArrowLeft size={20} /> Retour</Link>
         
         <div className="register-container-v2">

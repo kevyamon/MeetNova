@@ -371,6 +371,10 @@
 }
 
 /* Responsive */
+.nowrap {
+  white-space: nowrap;
+}
+
 @media (max-width: 1024px) {
   .hero-content {
     flex-direction: column;
