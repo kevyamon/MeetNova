@@ -121,7 +121,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <aside className="sidebar glass">
         <div className="sidebar-header">
-          <img src="/src/assets/logo.png" alt="" className="sidebar-logo" />
+          <img src="https://res.cloudinary.com/dqueeyulc/image/upload/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png" alt="" className="sidebar-logo" />
           <span>MeetNova Admin</span>
         </div>
         <nav>

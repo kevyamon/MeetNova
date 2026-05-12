@@ -50,7 +50,7 @@ const Home = () => {
     <div className="home-page">
       <header className="hero glass anim-fade-down">
         <div className="container">
-          <img src="/src/assets/logo.png" alt="MeetNova Logo" className="logo" />
+          <img src="https://res.cloudinary.com/dqueeyulc/image/upload/q_auto/f_auto/v1778560493/cdf28651-47ff-41a9-84e8-bb7f08543fc0.png" alt="MeetNova Logo" className="logo" />
           <h1>Découvrez le futur de l'innovation</h1>
           <p>Rejoignez les événements les plus marquants de NovaTech LoKo</p>
         </div>
