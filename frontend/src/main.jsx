@@ -33,9 +33,12 @@ if ('serviceWorker' in navigator && typeof __GIT_HASH__ !== 'undefined') {
 
       const checkUpdate = async () => {
         try {
-          const res = await fetch('/assets/index-*.js', { cache: 'no-store' }).catch(() => null);
-          const text = await res?.text();
-          const match = text?.match(/const __GIT_HASH__ = '([^']+)'/);
+          const scripts = document.querySelectorAll('script[src*="/assets/index-"]');
+          if (scripts.length === 0) return;
+          const src = scripts[0].src;
+          const res = await fetch(src, { cache: 'no-store' });
+          const text = await res.text();
+          const match = text.match(/const __GIT_HASH__ = '([^']+)'/);
           if (match && match[1] !== __GIT_HASH__) {
             console.log('🚀 Nouveau déploiement détecté !');
             window.dispatchEvent(new CustomEvent('app-update-available'));
