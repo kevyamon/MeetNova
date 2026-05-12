@@ -11,12 +11,9 @@ createRoot(document.getElementById('root')).render(
 if ('serviceWorker' in navigator && typeof __GIT_HASH__ !== 'undefined') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then(registration => {
-      console.log('🚀 MeetNova SW Ready');
-
       const savedHash = sessionStorage.getItem('meetnova_git_hash');
 
       if (savedHash && savedHash !== __GIT_HASH__) {
-        console.log('🚀 Nouveau déploiement détecté !');
         sessionStorage.setItem('meetnova_git_hash', __GIT_HASH__);
         sessionStorage.setItem('meetnova_update_reload', 'true');
         sessionStorage.setItem('meetnova_last_path', window.location.pathname);
@@ -41,7 +38,6 @@ if ('serviceWorker' in navigator && typeof __GIT_HASH__ !== 'undefined') {
           const text = await res.text();
           const match = text.match(/const __GIT_HASH__ = '([^']+)'/);
           if (match && match[1] !== __GIT_HASH__) {
-            console.log('🚀 Nouveau déploiement détecté !');
             window.dispatchEvent(new CustomEvent('app-update-available'));
           }
         } catch {}
@@ -62,7 +58,6 @@ if ('serviceWorker' in navigator && typeof __GIT_HASH__ !== 'undefined') {
         if (worker) {
           worker.onstatechange = () => {
             if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('✨ Nouvelle version disponible');
               window.dispatchEvent(new CustomEvent('app-update-available'));
             }
           };
