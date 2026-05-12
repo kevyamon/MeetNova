@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, Edit2, Trash2, Camera, Calendar, MapPin, 
   AlignLeft, X, Save, LayoutDashboard,
-  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, Check
+  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Check
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -173,7 +173,7 @@ const CategoryPickerModal = ({ isOpen, onClose, value, onSelect, customValue, on
               className={`category-btn ${value === type ? 'selected' : ''}`}
               onClick={() => select(type)}
             >
-              {type === 'Autre' ? '🔖' : '📌'} {type}
+              {type}
             </button>
           ))}
         </div>
@@ -213,6 +213,17 @@ const AdminDashboard = () => {
   
   const [formDate, setFormDate] = useState('');
   const [formTime, setFormTime] = useState('');
+
+  useEffect(() => {
+    if (isModalOpen || showDatePicker || showTimePicker || showCategoryPicker) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isModalOpen, showDatePicker, showTimePicker, showCategoryPicker]);
 
   // Fetch Events
   const { data: events, isLoading } = useQuery({
