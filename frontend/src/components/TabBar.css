@@ -160,8 +160,29 @@
 }
 
 .admin-nav {
-  background: #0a0a0c !important; /* Force le noir pour l'admin */
-  border-top-color: var(--glass-border) !important;
+  background: #0a0a0c !important; 
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.nav-logo-pc {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 1rem;
+}
+
+.nav-logo-pc img {
+  width: 40px !important;
+  height: 40px !important;
+  object-fit: contain !important;
+}
+
+.nav-logo-pc span {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: white;
 }
 
 @keyframes bounce {
