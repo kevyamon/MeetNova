@@ -6,6 +6,7 @@ import {
 
 const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
   const modalRef = useRef(null);
+  const textSectionRef = useRef(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [currentMediaIndex, setCurrentMediaIndex] = useState(initialIndex);
 
@@ -17,41 +18,43 @@ const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
     } else {
       document.body.style.overflow = '';
     }
+  }, [isOpen, initialIndex]);
 
-    const handleModalScroll = () => {
-      if (modalRef.current && modalRef.current.scrollTop > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
+  useEffect(() => {
+    const textEl = textSectionRef.current;
+    if (!textEl) return;
+
+    const handleScroll = () => {
+      setShowScrollTop(textEl.scrollTop > 300);
     };
 
-    const currentRef = modalRef.current;
-    if (currentRef) {
-      currentRef.addEventListener('scroll', handleModalScroll);
-    }
+    textEl.addEventListener('scroll', handleScroll);
+    return () => textEl.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    return () => {
-      document.body.style.overflow = '';
-      if (currentRef) {
-        currentRef.removeEventListener('scroll', handleModalScroll);
-      }
-    };
-  }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen || news.media.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentMediaIndex(prev => (prev + 1) % news.media.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isOpen, news.media]);
 
   if (!isOpen || !news) return null;
 
   const handleScrollToTop = (e) => {
     e.stopPropagation();
-    modalRef.current?.querySelector('.modal-text-section').scrollTo({ top: 0, behavior: 'smooth' });
+    textSectionRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const nextMedia = () => {
-    setCurrentMediaIndex((prev) => (prev + 1) % news.media.length);
+  const nextMedia = (e) => {
+    e?.stopPropagation();
+    setCurrentMediaIndex(prev => (prev + 1) % news.media.length);
   };
 
-  const prevMedia = () => {
-    setCurrentMediaIndex((prev) => (prev - 1 + news.media.length) % news.media.length);
+  const prevMedia = (e) => {
+    e?.stopPropagation();
+    setCurrentMediaIndex(prev => (prev - 1 + news.media.length) % news.media.length);
   };
 
   return (
@@ -79,7 +82,11 @@ const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
                 <>
                   <button className="nav-btn prev" onClick={prevMedia}><ChevronLeft size={24} /></button>
                   <button className="nav-btn next" onClick={nextMedia}><ChevronRight size={24} /></button>
-                  <div className="media-counter">{currentMediaIndex + 1} / {news.media.length}</div>
+                  <div className="carousel-dots modal-dots">
+                    {news.media.map((_, i) => (
+                      <div key={i} className={`dot ${i === currentMediaIndex ? 'active' : ''}`} />
+                    ))}
+                  </div>
                 </>
               )}
             </div>
@@ -90,7 +97,7 @@ const NewsModal = ({ isOpen, onClose, news, initialIndex = 0 }) => {
           )}
         </div>
 
-        <div className="modal-text-section">
+        <div className="modal-text-section" ref={textSectionRef}>
           <div className="modal-meta">
             <Calendar size={16} />
             <span>{new Date(news.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>

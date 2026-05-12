@@ -359,6 +359,10 @@
   font-weight: 600;
 }
 
+.modal-dots {
+  bottom: 1rem;
+}
+
 .modal-text-section {
   padding: 3rem;
   overflow-y: auto;

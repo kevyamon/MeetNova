@@ -239,10 +239,23 @@
 }
 
 .step-actions {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2rem;
+}
+
+.step-actions .btn-secondary,
+.step-actions .btn-primary {
+  flex: 1;
+  min-width: 140px;
+  justify-content: center;
+  text-align: center;
+}
+
+.step-actions .btn-primary span,
+.step-actions .btn-primary {
+  white-space: nowrap;
 }
 
 .btn-secondary {
@@ -441,5 +454,14 @@
 
   .scroll-top-btn {
     bottom: 90px;
+  }
+
+  .step-actions {
+    flex-direction: column;
+  }
+
+  .step-actions .btn-secondary,
+  .step-actions .btn-primary {
+    width: 100%;
   }
 }
