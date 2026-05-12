@@ -50,9 +50,6 @@ const News = () => {
     <div className="news-page">
       <header className="news-hero anim-fade-down">
         <div className="container">
-          <div className="badge-new">
-            <Sparkles size={14} /> Le pouls de NovaTech
-          </div>
           <h1>Actualités & Innovations</h1>
           <p>Découvrez les dernières avancées, projets et moments forts de notre communauté.</p>
         </div>
@@ -70,9 +67,16 @@ const News = () => {
         </div>
 
         {error ? (
-          <div className="news-error glass">
-            <p>Impossible de charger les actualités.</p>
-            <button onClick={() => refetch()}>Réessayer</button>
+          <div className="news-error-card glass anim-scale-in">
+            <div className="error-visual">
+              <div className="error-ring"></div>
+              <RefreshCcw size={40} className="error-icon" />
+            </div>
+            <h2>Oups ! Connexion interrompue</h2>
+            <p>Nous n'avons pas pu récupérer les dernières nouvelles. Vérifiez votre connexion internet.</p>
+            <button className="btn-primary" onClick={() => refetch()}>
+              <RefreshCcw size={18} /> Réessayer
+            </button>
           </div>
         ) : news && news.length > 0 ? (
           <div className="news-grid">
