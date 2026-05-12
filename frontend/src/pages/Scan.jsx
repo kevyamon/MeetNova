@@ -120,13 +120,27 @@ const Scan = () => {
 
           <div className="status-display">
             {status === 'success' && result && (
-              <div className="result-success anim-fade-up">
-                <div className="result-icon"><CheckCircle size={40} /></div>
-                <h2>Pass Valide</h2>
+              <div className="result-card result-success">
+                <div className="result-icon">
+                  <CheckCircle size={48} />
+                </div>
+                <h2>Acces Autorise</h2>
+                <div className="success-badge">
+                  <CheckCircle size={16} /> Participant verifie
+                </div>
                 <div className="info-grid">
-                  <div className="info-item"><User size={16} /> <span>{result.attendee.prenoms} {result.attendee.nom}</span></div>
-                  <div className="info-item"><BookOpen size={16} /> <span>{result.attendee.filiere}</span></div>
-                  <div className="info-item"><Clock size={16} /> <span>{new Date(result.attendee.createdAt).toLocaleDateString()}</span></div>
+                  <div className="info-item">
+                    <User size={18} />
+                    <span>{result.attendee.prenoms} {result.attendee.nom}</span>
+                  </div>
+                  <div className="info-item">
+                    <BookOpen size={18} />
+                    <span>{result.attendee.filiere}</span>
+                  </div>
+                  <div className="info-item">
+                    <Clock size={18} />
+                    <span>{new Date(result.attendee.createdAt).toLocaleDateString()}</span>
+                  </div>
                 </div>
                 <div className="event-badge">
                   <MapPin size={14} /> {result.event.title}
@@ -135,11 +149,15 @@ const Scan = () => {
             )}
 
             {status === 'error' && (
-              <div className="result-error anim-fade-up">
-                <div className="result-icon"><XCircle size={40} /></div>
-                <h2>Accès Refusé</h2>
+              <div className="result-card result-error">
+                <div className="result-icon">
+                  <XCircle size={48} />
+                </div>
+                <h2>Acces Refuse</h2>
                 <p>{errorMsg}</p>
-                <button className="btn-secondary" onClick={() => setStatus('idle')}>Réessayer</button>
+                <button className="btn-secondary" onClick={() => setStatus('idle')}>
+                  Reessayer
+                </button>
               </div>
             )}
           </div>

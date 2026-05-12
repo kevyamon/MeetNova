@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, Edit2, Trash2, Camera, Calendar, MapPin, 
   AlignLeft, X, Save, LayoutDashboard,
-  Sparkles, Hash, Clock, Info
+  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, Check
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,186 @@ import api from '../services/api';
 import './AdminDashboard.css';
 
 const EVENT_TYPES = ['Conférence', 'Hackaton', 'Sortie Détente', 'Formation', 'Autre'];
+const MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+const DAYS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+
+const DatePickerModal = ({ isOpen, onClose, value, onSelect }) => {
+  const today = new Date();
+  const [viewDate, setViewDate] = useState(value ? new Date(value) : today);
+  const [selectedDate, setSelectedDate] = useState(value ? new Date(value) : null);
+
+  if (!isOpen) return null;
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+
+  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+  const getFirstDayOfMonth = (y, m) => new Date(y, m, 1).getDay();
+
+  const daysInMonth = getDaysInMonth(year, month);
+  const firstDay = getFirstDayOfMonth(year, month);
+
+  const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setViewDate(new Date(year, month + 1, 1));
+
+  const selectDate = (day) => {
+    const date = new Date(year, month, day);
+    setSelectedDate(date);
+    onSelect(date.toISOString().split('T')[0]);
+    onClose();
+  };
+
+  const formatDisplay = (date) => {
+    if (!date) return '';
+    return date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  return (
+    <div className="custom-picker-overlay" onClick={onClose}>
+      <div className="custom-picker-modal" onClick={e => e.stopPropagation()}>
+        <div className="picker-header">
+          <button onClick={prevMonth}><ChevronLeft size={20} /></button>
+          <span>{MONTHS[month]} {year}</span>
+          <button onClick={nextMonth}><ChevronRight size={20} /></button>
+        </div>
+        <div className="picker-weekdays">
+          {DAYS.map(d => <span key={d}>{d}</span>)}
+        </div>
+        <div className="picker-days">
+          {Array.from({ length: firstDay }).map((_, i) => <span key={`empty-${i}`} />)}
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const day = i + 1;
+            const date = new Date(year, month, day);
+            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+            const isPast = date < today && date.toDateString() !== today.toDateString();
+            return (
+              <button 
+                key={day} 
+                className={`day-btn ${isSelected ? 'selected' : ''} ${isPast ? 'past' : ''}`}
+                onClick={() => !isPast && selectDate(day)}
+                disabled={isPast}
+              >
+                {day}
+              </button>
+            );
+          })}
+        </div>
+        {selectedDate && (
+          <div className="picker-footer">
+            <span>{formatDisplay(selectedDate)}</span>
+            <button className="confirm-btn" onClick={() => { onSelect(selectedDate.toISOString().split('T')[0]); onClose(); }}>
+              <Check size={18} /> Confirmer
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const TimePickerModal = ({ isOpen, onClose, value, onSelect }) => {
+  const [hours, setHours] = useState('08');
+  const [minutes, setMinutes] = useState('00');
+
+  useEffect(() => {
+    if (value) {
+      const [h, m] = value.split(':');
+      setHours(h || '08');
+      setMinutes(m || '00');
+    }
+  }, [value, isOpen]);
+
+  if (!isOpen) return null;
+
+  const adjustHours = (delta) => {
+    let h = parseInt(hours) + delta;
+    if (h < 0) h = 23;
+    if (h > 23) h = 0;
+    setHours(h.toString().padStart(2, '0'));
+  };
+
+  const adjustMinutes = (delta) => {
+    let m = parseInt(minutes) + delta;
+    if (m < 0) m = 45;
+    if (m > 45) m = 0;
+    setMinutes(m.toString().padStart(2, '0'));
+  };
+
+  const confirm = () => {
+    onSelect(`${hours}:${minutes}`);
+    onClose();
+  };
+
+  return (
+    <div className="custom-picker-overlay" onClick={onClose}>
+      <div className="custom-picker-modal time-picker" onClick={e => e.stopPropagation()}>
+        <h3>Choisir l'heure</h3>
+        <div className="time-display">
+          <div className="time-column">
+            <button onClick={() => adjustHours(1)}><ChevronUp size={24} /></button>
+            <span className="time-value">{hours}</span>
+            <button onClick={() => adjustHours(-1)}><ChevronDown size={24} /></button>
+          </div>
+          <span className="time-separator">:</span>
+          <div className="time-column">
+            <button onClick={() => adjustMinutes(15)}><ChevronUp size={24} /></button>
+            <span className="time-value">{minutes}</span>
+            <button onClick={() => adjustMinutes(-15)}><ChevronDown size={24} /></button>
+          </div>
+        </div>
+        <div className="time-presets">
+          <button onClick={() => { setHours('08'); setMinutes('00'); }}>08:00</button>
+          <button onClick={() => { setHours('10'); setMinutes('00'); }}>10:00</button>
+          <button onClick={() => { setHours('14'); setMinutes('00'); }}>14:00</button>
+          <button onClick={() => { setHours('18'); setMinutes('00'); }}>18:00</button>
+        </div>
+        <div className="picker-actions">
+          <button className="cancel-btn" onClick={onClose}>Annuler</button>
+          <button className="confirm-btn" onClick={confirm}><Check size={18} /> Valider</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CategoryPickerModal = ({ isOpen, onClose, value, onSelect, customValue, onCustomChange }) => {
+  if (!isOpen) return null;
+
+  const select = (type) => {
+    onSelect(type);
+    onClose();
+  };
+
+  return (
+    <div className="custom-picker-overlay" onClick={onClose}>
+      <div className="custom-picker-modal category-picker" onClick={e => e.stopPropagation()}>
+        <h3>Choisir une catégorie</h3>
+        <div className="category-list">
+          {EVENT_TYPES.map(type => (
+            <button 
+              key={type} 
+              className={`category-btn ${value === type ? 'selected' : ''}`}
+              onClick={() => select(type)}
+            >
+              {type === 'Autre' ? '🔖' : '📌'} {type}
+            </button>
+          ))}
+        </div>
+        {value === 'Autre' && (
+          <div className="custom-type-input">
+            <input 
+              type="text" 
+              value={customValue} 
+              onChange={(e) => onCustomChange(e.target.value)}
+              placeholder="Nom de la catégorie..."
+              autoFocus
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const AdminDashboard = () => {
   const queryClient = useQueryClient();
@@ -26,6 +206,13 @@ const AdminDashboard = () => {
   
   const [selectedType, setSelectedType] = useState(EVENT_TYPES[0]);
   const [customType, setCustomType] = useState('');
+  
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  
+  const [formDate, setFormDate] = useState('');
+  const [formTime, setFormTime] = useState('');
 
   // Fetch Events
   const { data: events, isLoading } = useQuery({
@@ -116,6 +303,8 @@ const AdminDashboard = () => {
     setEditingEvent(event);
     setImages([]);
     setImagePreviews(event?.images || []);
+    setFormDate(event?.date ? event.date.split('T')[0] : '');
+    setFormTime(event?.time || '');
     
     if (event) {
       if (EVENT_TYPES.includes(event.type)) {
@@ -138,6 +327,9 @@ const AdminDashboard = () => {
     setEditingEvent(null);
     setImages([]);
     setImagePreviews([]);
+    setShowDatePicker(false);
+    setShowTimePicker(false);
+    setShowCategoryPicker(false);
   };
 
   const handleDelete = (id) => {
@@ -212,6 +404,8 @@ const AdminDashboard = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="modal-form">
+              <input type="hidden" name="date" value={formDate} />
+              <input type="hidden" name="time" value={formTime} />
               <div className="form-grid">
                 {/* Colonne Gauche : Infos */}
                 <div className="form-section">
@@ -224,14 +418,20 @@ const AdminDashboard = () => {
                   <div className="form-row" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem'}}>
                     <div className="form-group">
                       <label>Catégorie</label>
-                      <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)}>
-                        {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                      </select>
+                      <div className="custom-input-trigger" onClick={() => setShowCategoryPicker(true)}>
+                        <span>{selectedType}</span>
+                        <ChevronRight size={18} className="trigger-arrow" />
+                      </div>
                     </div>
                     {selectedType === 'Autre' && (
                       <div className="form-group anim-fade-up">
                         <label>Précisez le type</label>
-                        <input value={customType} onChange={(e) => setCustomType(e.target.value)} placeholder="Nom du type" required />
+                        <input 
+                          value={customType} 
+                          onChange={(e) => setCustomType(e.target.value)} 
+                          placeholder="Nom du type" 
+                          required 
+                        />
                       </div>
                     )}
                   </div>
@@ -253,11 +453,17 @@ const AdminDashboard = () => {
                   <div className="form-row" style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1.5rem'}}>
                     <div className="form-group">
                       <label>Date</label>
-                      <input type="date" name="date" defaultValue={editingEvent?.date?.split('T')[0]} required />
+                      <div className="custom-input-trigger" onClick={() => setShowDatePicker(true)}>
+                        <Calendar size={16} />
+                        <span>{formDate ? new Date(formDate).toLocaleDateString('fr-FR') : 'Sélectionner'}</span>
+                      </div>
                     </div>
                     <div className="form-group">
                       <label>Heure</label>
-                      <input type="time" name="time" defaultValue={editingEvent?.time} required />
+                      <div className="custom-input-trigger" onClick={() => setShowTimePicker(true)}>
+                        <Clock size={16} />
+                        <span>{formTime || 'Choisir'}</span>
+                      </div>
                     </div>
                   </div>
 
@@ -302,6 +508,29 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+
+      <DatePickerModal 
+        isOpen={showDatePicker} 
+        onClose={() => setShowDatePicker(false)} 
+        value={formDate}
+        onSelect={setFormDate}
+      />
+      
+      <TimePickerModal 
+        isOpen={showTimePicker} 
+        onClose={() => setShowTimePicker(false)} 
+        value={formTime}
+        onSelect={setFormTime}
+      />
+      
+      <CategoryPickerModal 
+        isOpen={showCategoryPicker} 
+        onClose={() => setShowCategoryPicker(false)} 
+        value={selectedType}
+        onSelect={setSelectedType}
+        customValue={customType}
+        onCustomChange={setCustomType}
+      />
     </div>
   );
 };
