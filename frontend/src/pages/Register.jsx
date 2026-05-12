@@ -6,7 +6,7 @@ import api from '../services/api';
 import './Register.css';
 
 const CAMPUSES = ['Abidjan', 'Bouaké', 'Yamoussoukro', 'Daloa', 'Korhogo'];
-const NIVEAUX = ['Licence 1', 'Licence 2', 'Licence 3', 'Master 1', 'Master 2'];
+const NIVEAUX = ['BTS1', 'BTS2', 'Licence 1', 'Licence 2', 'Licence 3', 'Master 1', 'Master 2'];
 
 const Register = () => {
   const { eventId } = useParams();
