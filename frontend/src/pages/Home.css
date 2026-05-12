@@ -34,6 +34,49 @@
   margin-bottom: 2rem;
 }
 
+.title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.empty-state {
+  text-align: center;
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--glass-border);
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: var(--text-main);
+}
+
+.empty-state p {
+  color: var(--text-muted);
+}
+
+.empty-icon-wrapper {
+  background: var(--primary-soft);
+  padding: 2rem;
+  border-radius: 50%;
+  color: var(--primary);
+}
+
+.floating-icon {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .badge {
   background-color: var(--primary-soft);
   color: var(--primary);
