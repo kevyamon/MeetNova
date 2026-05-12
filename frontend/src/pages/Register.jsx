@@ -28,9 +28,22 @@ const Register = () => {
     event: eventId
   });
 
-  // Scroll to top on mount
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Scroll visibility & to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToTop = () => {
@@ -208,7 +221,7 @@ const Register = () => {
       </div>
 
       {/* Bouton de retour en haut (Scroll to top) */}
-      <button className="scroll-top-btn glass" onClick={scrollToTop} aria-label="Remonter">
+      <button className={`scroll-top-btn glass ${showScrollTop ? 'visible' : ''}`} onClick={scrollToTop} aria-label="Remonter">
         <ArrowUp size={24} />
       </button>
 

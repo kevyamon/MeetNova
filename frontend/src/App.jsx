@@ -5,6 +5,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Register from './pages/Register';
+import News from './pages/News';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import Scan from './pages/Scan';
@@ -30,7 +31,7 @@ function App() {
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
-              <Route path="/news" element={<div className="flex-center" style={{paddingTop: '100px'}}>Section Actualités à venir...</div>} />
+              <Route path="/news" element={<News />} />
               <Route path="/register/:eventId" element={<Register />} />
               
               {/* Admin Routes */}

@@ -1,26 +1,6 @@
 @import "../styles/public/HomeHero.css";
 @import "../styles/public/HomeEventCard.css";
 
-/* ===== CSS Animations ===== */
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92) translateY(16px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.anim-fade-down { animation: fadeDown 0.7s cubic-bezier(0.4,0,0.2,1) both; }
-.anim-fade-up   { animation: fadeUp  0.7s cubic-bezier(0.4,0,0.2,1) both; }
-.anim-scale-in  { animation: scaleIn 0.5s cubic-bezier(0.4,0,0.2,1) both; }
-
 /* Premium Quantum Loader */
 .loading-screen {
   height: 100vh;
