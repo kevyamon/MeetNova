@@ -31,8 +31,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
-  // STRATÉGIE : Network First pour tout ce qui change souvent (HTML, API, Manifest, SW)
-  // Cache First uniquement pour les ressources statiques lourdes (Images, Fonts)
+  if (event.request.method === 'HEAD') return;
+  
   if (
     event.request.mode === 'navigate' || 
     url.pathname === '/' || 

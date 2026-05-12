@@ -34,11 +34,11 @@ if ('serviceWorker' in navigator) {
         }
       };
 
-      // Vérification toutes les 5 secondes
+      // Vérification toutes les 30 secondes
       setInterval(() => {
         registration.update();
         checkDeployment();
-      }, 5000);
+      }, 30000);
 
       // Vérifier aussi au focus
       window.addEventListener('focus', () => {
@@ -51,21 +51,12 @@ if ('serviceWorker' in navigator) {
         if (installingWorker) {
           installingWorker.onstatechange = () => {
             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('✨ Nouvelle version détectée, mise à jour...');
-              // Le skipWaiting() dans sw.js fera le reste
+              console.log('✨ Nouvelle version disponible');
+              window.dispatchEvent(new CustomEvent('app-update-available'));
             }
           };
         }
       };
     }).catch(err => console.error('SW Error:', err));
-  });
-
-  // On prévient l'app quand le nouveau Service Worker est prêt
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) {
-      refreshing = true;
-      window.dispatchEvent(new CustomEvent('app-update-available'));
-    }
   });
 }
