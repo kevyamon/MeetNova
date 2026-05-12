@@ -8,49 +8,56 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 );
 
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && typeof __GIT_HASH__ !== 'undefined') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then(registration => {
       console.log('🚀 MeetNova SW Ready');
-      
-      // Détection de nouveau déploiement via les headers Vercel
-      let lastDeploymentId = sessionStorage.getItem('meetnova_deploy_id');
-      
-      const checkDeployment = async () => {
+
+      const savedHash = sessionStorage.getItem('meetnova_git_hash');
+
+      if (savedHash && savedHash !== __GIT_HASH__) {
+        console.log('🚀 Nouveau déploiement détecté !');
+        sessionStorage.setItem('meetnova_update_reload', 'true');
+        sessionStorage.setItem('meetnova_last_path', window.location.pathname);
+        const inputs = document.querySelectorAll('input, textarea');
+        const formData = {};
+        inputs.forEach(input => {
+          if (input.name && input.value) formData[input.name] = input.value;
+        });
+        sessionStorage.setItem('meetnova_pending_form', JSON.stringify(formData));
+        window.location.reload();
+        return;
+      }
+
+      sessionStorage.setItem('meetnova_git_hash', __GIT_HASH__);
+
+      const checkUpdate = async () => {
         try {
-          const response = await fetch('/?t=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
-          const deploymentId = response.headers.get('x-vercel-id');
-          
-          if (deploymentId) {
-            if (lastDeploymentId && lastDeploymentId !== deploymentId) {
-              console.log('🚀 Nouveau déploiement Vercel détecté !');
-              window.dispatchEvent(new CustomEvent('app-update-available'));
-            }
-            lastDeploymentId = deploymentId;
-            sessionStorage.setItem('meetnova_deploy_id', deploymentId);
+          const res = await fetch('/assets/index-*.js', { cache: 'no-store' }).catch(() => null);
+          const text = await res?.text();
+          const match = text?.match(/const __GIT_HASH__ = '([^']+)'/);
+          if (match && match[1] !== __GIT_HASH__) {
+            console.log('🚀 Nouveau déploiement détecté !');
+            window.dispatchEvent(new CustomEvent('app-update-available'));
           }
-        } catch (e) {
-          // Silencieux
-        }
+        } catch {}
       };
 
-      // Vérification toutes les 30 secondes
       setInterval(() => {
         registration.update();
-        checkDeployment();
-      }, 30000);
+        checkUpdate();
+      }, 60000);
 
-      // Vérifier aussi au focus
       window.addEventListener('focus', () => {
         registration.update();
-        checkDeployment();
+        checkUpdate();
       });
 
       registration.onupdatefound = () => {
-        const installingWorker = registration.installing;
-        if (installingWorker) {
-          installingWorker.onstatechange = () => {
-            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+        const worker = registration.installing;
+        if (worker) {
+          worker.onstatechange = () => {
+            if (worker.state === 'installed' && navigator.serviceWorker.controller) {
               console.log('✨ Nouvelle version disponible');
               window.dispatchEvent(new CustomEvent('app-update-available'));
             }
