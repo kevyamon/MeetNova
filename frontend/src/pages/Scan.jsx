@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Camera, ArrowLeft, CheckCircle, XCircle, 
   RefreshCcw, Info, Hash, Scan as ScanIcon, 
   User, BookOpen, Clock, MapPin
 } from 'lucide-react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import api from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 import './Scan.css';
@@ -18,28 +19,37 @@ const Scan = () => {
   const [result, setResult] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleValidate = async (e) => {
+  const handleValidate = async (e, scannedUuid = null) => {
     if (e) e.preventDefault();
-    if (!uuid) return;
+    const idToValidate = scannedUuid || uuid;
+    if (!idToValidate) return;
 
     setStatus('loading');
     setErrorMsg('');
     setResult(null);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 secondes timeout
+
     try {
-      // Correction de la route et de la méthode pour correspondre au backend
-      const res = await api.put(`/scan/validate/${uuid}`);
+      const res = await api.put(`/scan/validate/${idToValidate}`, undefined, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
       setResult(res.data.data);
       setStatus('success');
       toast("Pass validé avec succès ! Félicitations.", "success");
       setUuid('');
     } catch (err) {
+      clearTimeout(timeoutId);
       let msg = "Une erreur est survenue lors de la validation.";
       
-      if (err.response?.status === 404) {
-        msg = "Ce pass est introuvable. Vérifiez le code.";
+      if (err.name === 'CanceledError' || err.name === 'AbortError') {
+        msg = "Délai d'attente dépassé (Timeout). Le serveur ne répond pas.";
+      } else if (err.response?.status === 404) {
+        msg = "Ce pass est introuvable dans la base de données.";
       } else if (err.response?.status === 400) {
-        msg = "Ce pass a déjà été utilisé ou est invalide.";
+        msg = err.response.data.message || "Ce pass a déjà été utilisé.";
       } else if (err.response?.data?.message) {
         msg = err.response.data.message;
       }
@@ -50,17 +60,39 @@ const Scan = () => {
     }
   };
 
-  const handleFileScan = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setStatus('loading');
-      setTimeout(() => {
-        setStatus('idle');
-        setMode('code');
-        toast("Analyse terminée. Confirmez le code détecté.", "info");
-      }, 1500);
+  useEffect(() => {
+    let scanner = null;
+    
+    if (mode === 'scanner') {
+      scanner = new Html5QrcodeScanner(
+        "qr-reader",
+        { fps: 10, qrbox: { width: 250, height: 250 }, rememberLastUsedCamera: true },
+        /* verbose= */ false
+      );
+      
+      scanner.render((decodedText) => {
+        // Met en pause le scanner pour éviter de spammer l'API
+        scanner.pause(true);
+        setUuid(decodedText);
+        handleValidate(null, decodedText).finally(() => {
+          // Reprend le scan après 3 secondes (le temps que l'utilisateur voit le résultat)
+          setTimeout(() => {
+            if (scanner && scanner.getState() === 2) { // 2 = SCANNING state
+              scanner.resume();
+            }
+          }, 3000);
+        });
+      }, (error) => {
+        // Ignorer les erreurs de scan continuelles (quand le code n'est pas encore net)
+      });
     }
-  };
+
+    return () => {
+      if (scanner) {
+        scanner.clear().catch(console.error);
+      }
+    };
+  }, [mode]); // Re-run whenever mode changes
 
   return (
     <div className="scan-page">
@@ -73,13 +105,13 @@ const Scan = () => {
         <div className="mode-switcher glass">
           <button 
             className={mode === 'code' ? 'active' : ''} 
-            onClick={() => setMode('code')}
+            onClick={() => { setMode('code'); setStatus('idle'); }}
           >
             <Hash size={20} /> Code
           </button>
           <button 
             className={mode === 'scanner' ? 'active' : ''} 
-            onClick={() => setMode('scanner')}
+            onClick={() => { setMode('scanner'); setStatus('idle'); }}
           >
             <ScanIcon size={20} /> Scanner
           </button>
@@ -98,7 +130,7 @@ const Scan = () => {
                 />
                 <button 
                   className="btn-primary validate-btn" 
-                  onClick={handleValidate}
+                  onClick={(e) => handleValidate(e)}
                   disabled={status === 'loading' || !uuid}
                 >
                   {status === 'loading' ? <RefreshCcw className="icon-spin" /> : 'Vérifier'}
@@ -107,14 +139,7 @@ const Scan = () => {
             </div>
           ) : (
             <div className="mode-content scanner-mode">
-              <div className="scanner-placeholder">
-                <Camera size={60} />
-                <p>Prêt pour le scan optique</p>
-              </div>
-              <label className="btn-primary scanner-launch">
-                Ouvrir la caméra
-                <input type="file" accept="image/*" capture="environment" onChange={handleFileScan} hidden />
-              </label>
+              <div id="qr-reader" style={{ width: '100%', borderRadius: '10px', overflow: 'hidden' }}></div>
             </div>
           )}
 
@@ -131,19 +156,12 @@ const Scan = () => {
                 <div className="info-grid">
                   <div className="info-item">
                     <User size={18} />
-                    <span>{result.attendee.prenoms} {result.attendee.nom}</span>
+                    <span>{result.nom} {result.prenoms}</span>
                   </div>
                   <div className="info-item">
                     <BookOpen size={18} />
-                    <span>{result.attendee.filiere}</span>
+                    <span>{result.campus}</span>
                   </div>
-                  <div className="info-item">
-                    <Clock size={18} />
-                    <span>{new Date(result.attendee.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-                <div className="event-badge">
-                  <MapPin size={14} /> {result.event.title}
                 </div>
               </div>
             )}

@@ -1,5 +1,5 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Camera, LogOut, LayoutDashboard } from 'lucide-react';
+import { Camera, LogOut, LayoutDashboard, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import './TabBar.css';
@@ -42,6 +42,11 @@ const AdminNavigation = () => {
             <Camera size={24} />
             <span>Scanner</span>
           </NavLink>
+          
+          <NavLink to="/mnccadmin/presents" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/presents')}>
+            <Users size={24} />
+            <span>Présents</span>
+          </NavLink>
 
           <button onClick={handleLogout} className="nav-item logout-nav-btn">
             <LogOut size={24} />
@@ -66,6 +71,11 @@ const AdminNavigation = () => {
           <NavLink to="/mnccadmin/scan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/scan')}>
             <Camera size={20} />
             <span>Scanner</span>
+          </NavLink>
+
+          <NavLink to="/mnccadmin/presents" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/presents')}>
+            <Users size={20} />
+            <span>Présents</span>
           </NavLink>
 
           <button onClick={handleLogout} className="nav-item logout-nav-btn">

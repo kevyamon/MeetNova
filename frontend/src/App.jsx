@@ -9,6 +9,7 @@ import News from './pages/News';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import Scan from './pages/Scan';
+import Presents from './pages/Presents';
 import Navigation from './components/TabBar';
 import AdminNavigation from './components/AdminNavigation';
 import UpdateManager from './components/common/UpdateManager';
@@ -52,6 +53,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Scan />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mnccadmin/presents" 
+                element={
+                  <ProtectedRoute>
+                    <Presents />
                   </ProtectedRoute>
                 } 
               />
