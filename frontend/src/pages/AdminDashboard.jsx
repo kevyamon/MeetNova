@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, Edit2, Trash2, Camera, Calendar, MapPin, 
   AlignLeft, X, Save, LayoutDashboard,
-  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, FileText
+  Sparkles, Hash, Clock, Info, ChevronLeft, ChevronRight, FileText, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -241,6 +241,13 @@ const AdminDashboard = () => {
             <p>Pilotez votre communauté en temps réel</p>
           </div>
           <div className="header-actions">
+            <button 
+              className="btn-secondary" 
+              onClick={() => navigate('/mnccadmin/presents')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <Users size={20} /> <span className="hide-mobile">Présents</span>
+            </button>
             <button 
               className="btn-primary add-btn" 
               onClick={() => activeTab === 'events' ? openModal() : setIsNewsModalOpen(true)}

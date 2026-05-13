@@ -30,7 +30,7 @@ const AdminNavigation = () => {
 
   return (
     <>
-      {/* Mobile TabBar : Uniquement les icônes essentielles */}
+      {/* Mobile TabBar : Uniquement les icônes essentielles pour éviter les bugs de layout */}
       <nav className="mobile-tab-bar admin-nav glass">
         <div className="nav-items">
           <NavLink to="/mnccadmin/dashboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/dashboard')}>
@@ -41,11 +41,6 @@ const AdminNavigation = () => {
           <NavLink to="/mnccadmin/scan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/scan')}>
             <Camera size={24} />
             <span>Scanner</span>
-          </NavLink>
-          
-          <NavLink to="/mnccadmin/presents" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleNavClick(e, '/mnccadmin/presents')}>
-            <Users size={24} />
-            <span>Présents</span>
           </NavLink>
 
           <button onClick={handleLogout} className="nav-item logout-nav-btn">

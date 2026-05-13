@@ -5,7 +5,7 @@ import {
   RefreshCcw, Info, Hash, Scan as ScanIcon, 
   User, BookOpen, Clock, MapPin
 } from 'lucide-react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import api from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 import './Scan.css';
@@ -61,35 +61,48 @@ const Scan = () => {
   };
 
   useEffect(() => {
-    let scanner = null;
+    let html5QrCode = null;
+    let isComponentMounted = true;
     
     if (mode === 'scanner') {
-      scanner = new Html5QrcodeScanner(
-        "qr-reader",
-        { fps: 10, qrbox: { width: 250, height: 250 }, rememberLastUsedCamera: true },
-        /* verbose= */ false
-      );
+      html5QrCode = new Html5Qrcode("qr-reader");
       
-      scanner.render((decodedText) => {
-        // Met en pause le scanner pour éviter de spammer l'API
-        scanner.pause(true);
-        setUuid(decodedText);
-        handleValidate(null, decodedText).finally(() => {
-          // Reprend le scan après 3 secondes (le temps que l'utilisateur voit le résultat)
-          setTimeout(() => {
-            if (scanner && scanner.getState() === 2) { // 2 = SCANNING state
-              scanner.resume();
-            }
-          }, 3000);
-        });
-      }, (error) => {
-        // Ignorer les erreurs de scan continuelles (quand le code n'est pas encore net)
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          if (html5QrCode.getState() === 2) { // 2 = SCANNING
+            html5QrCode.pause();
+            setUuid(decodedText);
+            handleValidate(null, decodedText).finally(() => {
+              setTimeout(() => {
+                if (isComponentMounted && html5QrCode && html5QrCode.getState() === 3) { // 3 = PAUSED
+                  html5QrCode.resume();
+                }
+              }, 3000);
+            });
+          }
+        },
+        (error) => {
+          // Ignorer les erreurs de scan continuelles
+        }
+      ).catch(err => {
+        console.error("Erreur d'accès à la caméra:", err);
       });
     }
 
     return () => {
-      if (scanner) {
-        scanner.clear().catch(console.error);
+      isComponentMounted = false;
+      if (html5QrCode) {
+        if (html5QrCode.isScanning) {
+          html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+          }).catch(console.error);
+        } else {
+          try {
+            html5QrCode.clear();
+          } catch(e) {}
+        }
       }
     };
   }, [mode]); // Re-run whenever mode changes

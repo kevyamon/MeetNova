@@ -77,43 +77,31 @@ const Presents = () => {
               <p>Aucun participant présent trouvé.</p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="presents-table">
-                <thead>
-                  <tr>
-                    <th>Participant</th>
-                    <th>Campus</th>
-                    <th>Filière / Niveau</th>
-                    <th>Heure d'arrivée</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredAttendees.map((attendee) => (
-                    <tr key={attendee._id || attendee.uuid}>
-                      <td>
-                        <div className="participant-info">
-                          <strong>{attendee.prenoms} {attendee.nom}</strong>
-                          <span className="text-muted">{attendee.email}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="badge-campus">{attendee.campus}</span>
-                      </td>
-                      <td>
-                        {attendee.filiere} ({attendee.niveau_etude})
-                      </td>
-                      <td>
-                        <div className="time-info">
-                          <Clock size={14} />
-                          {new Date(attendee.scannedAt).toLocaleTimeString('fr-FR', {
-                            hour: '2-digit', minute: '2-digit', second: '2-digit'
-                          })}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="presents-cards-grid">
+              {filteredAttendees.map((attendee) => (
+                <div key={attendee._id || attendee.uuid} className="present-card glass anim-scale-in">
+                  <div className="present-card-header">
+                    <div className="participant-info">
+                      <strong>{attendee.prenoms} {attendee.nom}</strong>
+                      <span className="text-muted">{attendee.email}</span>
+                    </div>
+                    <div className="time-info">
+                      <Clock size={14} />
+                      {new Date(attendee.scannedAt).toLocaleTimeString('fr-FR', {
+                        hour: '2-digit', minute: '2-digit'
+                      })}
+                    </div>
+                  </div>
+                  <div className="present-card-body">
+                    <div className="info-badge">
+                      <span className="badge-campus">{attendee.campus}</span>
+                    </div>
+                    <div className="info-text">
+                      {attendee.filiere} <span className="dot-separator">•</span> {attendee.niveau_etude}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
