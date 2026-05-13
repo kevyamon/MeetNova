@@ -31,26 +31,6 @@ const Home = () => {
     };
   }, []);
 
-  useEffect(() => {
-    socket.on('event:created', () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-    });
-
-    socket.on('event:updated', () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-    });
-
-    socket.on('event:deleted', () => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-    });
-
-    return () => {
-      socket.off('event:created');
-      socket.off('event:updated');
-      socket.off('event:deleted');
-    };
-  }, [queryClient]);
-
   const { data: events, isLoading } = useQuery({
     queryKey: ['events'],
     queryFn: async () => {

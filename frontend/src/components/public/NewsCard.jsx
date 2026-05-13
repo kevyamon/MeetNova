@@ -209,8 +209,16 @@ const NewsCard = ({ news, index }) => {
             </div>
           ) : news.media?.[0]?.type === 'video' ? (
             <div className="video-thumb">
-              <Play size={40} />
-              <video src={news.media[0].url} muted />
+              <div className="play-icon-overlay">
+                <Play size={24} fill="white" />
+              </div>
+              <video 
+                src={news.media[0].url} 
+                muted 
+                loop 
+                playsInline 
+                autoPlay 
+              />
             </div>
           ) : (
             <div className="news-placeholder">

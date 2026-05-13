@@ -11,25 +11,7 @@ const News = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-
-    socket.on('news:created', () => {
-      queryClient.invalidateQueries({ queryKey: ['news'] });
-    });
-
-    socket.on('news:updated', () => {
-      queryClient.invalidateQueries({ queryKey: ['news'] });
-    });
-
-    socket.on('news:deleted', () => {
-      queryClient.invalidateQueries({ queryKey: ['news'] });
-    });
-
-    return () => {
-      socket.off('news:created');
-      socket.off('news:updated');
-      socket.off('news:deleted');
-    };
-  }, [queryClient]);
+  }, []);
 
   const { data: news, isLoading, isRefetching, error, refetch } = useQuery({
     queryKey: ['news'],
