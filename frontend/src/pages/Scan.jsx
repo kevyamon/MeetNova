@@ -106,6 +106,18 @@ const Scan = () => {
     };
   }, [mode]); // Re-run whenever mode changes
 
+  // Block scroll when modal is open
+  useEffect(() => {
+    if (status === 'success' || status === 'error') {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [status]);
+
   return (
     <div className="scan-page">
       <main className="container-small scan-container">
@@ -191,13 +203,22 @@ const Scan = () => {
                   <span>{result.campus}</span>
                 </div>
               </div>
-              <button 
-                className="btn-primary mt-4" 
-                style={{ width: '100%', marginTop: '1.5rem' }} 
-                onClick={() => { setStatus('idle'); setUuid(''); }}
-              >
-                Nouveau Scan
-              </button>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem', width: '100%' }}>
+                <button 
+                  className="btn-primary" 
+                  style={{ flex: 1, justifyContent: 'center' }} 
+                  onClick={() => { setStatus('idle'); setUuid(''); }}
+                >
+                  Nouveau Scan
+                </button>
+                <button 
+                  className="btn-secondary" 
+                  style={{ flex: 1, justifyContent: 'center' }} 
+                  onClick={() => navigate('/mnccadmin/dashboard')}
+                >
+                  Quitter
+                </button>
+              </div>
             </div>
           )}
 
@@ -208,13 +229,22 @@ const Scan = () => {
               </div>
               <h2>Accès Refusé</h2>
               <p>{errorMsg}</p>
-              <button 
-                className="btn-secondary" 
-                style={{ width: '100%', marginTop: '1rem' }} 
-                onClick={() => { setStatus('idle'); setUuid(''); }}
-              >
-                Fermer
-              </button>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '1rem', width: '100%' }}>
+                <button 
+                  className="btn-secondary" 
+                  style={{ flex: 1, justifyContent: 'center' }} 
+                  onClick={() => { setStatus('idle'); setUuid(''); }}
+                >
+                  Fermer
+                </button>
+                <button 
+                  className="btn-secondary" 
+                  style={{ flex: 1, justifyContent: 'center' }} 
+                  onClick={() => navigate('/mnccadmin/dashboard')}
+                >
+                  Quitter
+                </button>
+              </div>
             </div>
           )}
         </div>
