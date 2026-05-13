@@ -146,6 +146,9 @@ const Navigation = () => {
                 ? "Installez MeetNova sur votre écran d'accueil pour un accès rapide et hors-ligne." 
                 : "L'application est déjà installée ou gérée par votre navigateur."}
             </p>
+            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px', marginBottom: '1.2rem', textAlign: 'left' }}>
+              <b>Astuce :</b> Vous pourrez réafficher ce bouton à tout moment en maintenant la barre du bas appuyée pendant 1,5 seconde.
+            </div>
             
             <div className="modal-actions-column">
               {canInstall && (
@@ -184,6 +187,9 @@ const Navigation = () => {
             <p className="modal-desc">
               Nous avons détecté que vous utilisez déjà l'application installée. Voulez-vous masquer le bouton central "Installer" pour alléger votre barre de navigation ?
             </p>
+            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px', marginBottom: '1.2rem', textAlign: 'left' }}>
+              <b>Astuce :</b> Vous pourrez le réafficher à tout moment en maintenant la barre du bas appuyée pendant 1,5 seconde.
+            </div>
             
             <div className="modal-actions-row" style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
               <button 
