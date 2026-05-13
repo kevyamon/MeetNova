@@ -31,20 +31,35 @@ const UpdateManager = () => {
     }
   }, [isUpdateAvailable]);
 
-  // Polling automatique
+  // Polling automatique et détection au focus
   useEffect(() => {
+    // Vérification initiale au chargement
+    performCheck();
+
     const interval = setInterval(performCheck, POLLING_INTERVAL);
+    
+    // Détection immédiate quand l'onglet redevient actif sur PC
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        performCheck();
+      }
+    };
     
     // On garde aussi l'écouteur d'événement au cas où le Service Worker le déclenche
     const handleSWUpdate = () => {
       setIsUpdateAvailable(true);
       setShowModal(true);
     };
+
     window.addEventListener('app-update-available', handleSWUpdate);
+    window.addEventListener('focus', handleVisibilityOrFocus);
+    window.addEventListener('visibilitychange', handleVisibilityOrFocus);
     
     return () => {
       clearInterval(interval);
       window.removeEventListener('app-update-available', handleSWUpdate);
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+      window.removeEventListener('visibilitychange', handleVisibilityOrFocus);
     };
   }, [performCheck]);
 

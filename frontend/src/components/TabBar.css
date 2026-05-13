@@ -191,3 +191,47 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+
+/* --- Modales TabBar --- */
+.tabbar-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.tabbar-modal {
+  width: 100%;
+  max-width: 340px;
+  padding: 1.8rem;
+  text-align: center;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.tabbar-modal h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.8rem;
+  color: white;
+}
+
+.tabbar-modal .modal-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.modal-actions-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

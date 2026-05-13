@@ -153,7 +153,7 @@ const Home = () => {
             onMouseLeave={handlePressEnd}
             onTouchStart={handlePressStart}
             onTouchEnd={handlePressEnd}
-            style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
+            style={{ cursor: 'default', userSelect: 'none', WebkitUserSelect: 'none' }}
           >
             MeetNova
           </span>
