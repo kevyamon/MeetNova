@@ -38,8 +38,7 @@ const Scan = () => {
       clearTimeout(timeoutId);
       setResult(res.data.data);
       setStatus('success');
-      toast("Pass validé avec succès ! Félicitations.", "success");
-      setUuid('');
+      // Toast supprimé au profit de la modale
     } catch (err) {
       clearTimeout(timeoutId);
       let msg = "Une erreur est survenue lors de la validation.";
@@ -56,7 +55,7 @@ const Scan = () => {
 
       setErrorMsg(msg);
       setStatus('error');
-      toast(msg, "error");
+      // Toast supprimé au profit de la modale
     }
   };
 
@@ -162,43 +161,6 @@ const Scan = () => {
           <div className="mode-content scanner-mode" style={{ display: mode === 'scanner' ? 'block' : 'none' }}>
             <div id="qr-reader" style={{ width: '100%', borderRadius: '10px', overflow: 'hidden' }}></div>
           </div>
-
-          <div className="status-display">
-            {status === 'success' && result && (
-              <div className="result-card result-success">
-                <div className="result-icon">
-                  <CheckCircle size={48} />
-                </div>
-                <h2>Accès Autorisé</h2>
-                <div className="success-badge">
-                  <CheckCircle size={16} /> Participant vérifié
-                </div>
-                <div className="info-grid">
-                  <div className="info-item">
-                    <User size={18} />
-                    <span>{result.nom} {result.prenoms}</span>
-                  </div>
-                  <div className="info-item">
-                    <BookOpen size={18} />
-                    <span>{result.campus}</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {status === 'error' && (
-              <div className="result-card result-error">
-                <div className="result-icon">
-                  <XCircle size={48} />
-                </div>
-                <h2>Accès Refusé</h2>
-                <p>{errorMsg}</p>
-                <button className="btn-secondary" onClick={() => setStatus('idle')}>
-                  Réessayer
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="scan-footer-note anim-fade-up">
@@ -206,6 +168,57 @@ const Scan = () => {
           <span>Vérifiez que le participant possède une pièce d'identité correspondante.</span>
         </div>
       </main>
+
+      {/* Modal Overlay for Results */}
+      {(status === 'success' || status === 'error') && (
+        <div className="status-modal-overlay">
+          {status === 'success' && result && (
+            <div className="result-card result-success">
+              <div className="result-icon">
+                <CheckCircle size={48} />
+              </div>
+              <h2>Accès Autorisé</h2>
+              <div className="success-badge">
+                <CheckCircle size={16} /> Participant vérifié
+              </div>
+              <div className="info-grid">
+                <div className="info-item">
+                  <User size={18} />
+                  <span>{result.nom} {result.prenoms}</span>
+                </div>
+                <div className="info-item">
+                  <BookOpen size={18} />
+                  <span>{result.campus}</span>
+                </div>
+              </div>
+              <button 
+                className="btn-primary mt-4" 
+                style={{ width: '100%', marginTop: '1.5rem' }} 
+                onClick={() => { setStatus('idle'); setUuid(''); }}
+              >
+                Nouveau Scan
+              </button>
+            </div>
+          )}
+
+          {status === 'error' && (
+            <div className="result-card result-error">
+              <div className="result-icon">
+                <XCircle size={48} />
+              </div>
+              <h2>Accès Refusé</h2>
+              <p>{errorMsg}</p>
+              <button 
+                className="btn-secondary" 
+                style={{ width: '100%', marginTop: '1rem' }} 
+                onClick={() => { setStatus('idle'); setUuid(''); }}
+              >
+                Fermer
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

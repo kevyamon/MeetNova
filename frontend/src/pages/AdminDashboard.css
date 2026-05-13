@@ -5,14 +5,16 @@
 /* --- Base Layout --- */
 .admin-dashboard {
   min-height: 100vh;
-  background: #0a0a0c; /* Noir profond forcé */
+  background: #0a0a0c;
   color: white;
   position: relative;
+  padding-bottom: 120px; /* Fix pour le scroll masqué par la TabBar */
 }
 
 @media (min-width: 1024px) {
   .admin-dashboard {
-    padding-left: 260px; /* Espace pour la Sidebar fixe */
+    padding-left: 260px;
+    padding-bottom: 2rem;
   }
 }
 
@@ -20,6 +22,12 @@
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+  .admin-content {
+    padding: 1rem;
+  }
 }
 
 /* --- Loader --- */
@@ -48,6 +56,10 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.content-header p {
+  color: var(--text-muted);
+}
+
 .header-actions {
   display: flex;
   gap: 10px;
@@ -56,33 +68,39 @@
 
 @media (max-width: 600px) {
   .content-header {
-    padding: 1.2rem;
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
   }
   
   .content-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Police réduite */
+    margin-bottom: 4px;
+  }
+
+  .content-header p {
+    font-size: 0.85rem; /* Police réduite */
   }
   
   .header-actions {
     width: 100%;
     display: flex;
-    gap: 10px;
+    gap: 8px;
   }
   
   .header-actions button {
     flex: 1;
     justify-content: center;
+    font-size: 0.9rem;
+    padding: 0.7rem;
   }
 }
 
 /* --- Tabs --- */
 .admin-tabs-v2 {
   display: flex;
-  gap: 1rem;
-  padding: 0.5rem;
-  margin-bottom: 2rem;
+  gap: 0.5rem; /* Réduit */
+  padding: 0.4rem; /* Réduit */
+  margin-bottom: 1.5rem;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -90,18 +108,26 @@
   max-width: max-content;
   overflow-x: auto;
   white-space: nowrap;
+  /* Masquer la scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.admin-tabs-v2::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-tabs-v2 button {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.5rem;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem; /* Réduit pour éviter le scroll */
   border-radius: 8px;
   border: none;
   background: transparent;
   color: var(--text-muted);
   font-weight: 600;
+  font-size: 0.9rem; /* Police réduite */
   cursor: pointer;
   transition: all 0.3s;
 }
