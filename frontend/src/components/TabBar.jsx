@@ -33,6 +33,18 @@ const Navigation = () => {
     }
   }, []);
 
+  // Blocage du scroll quand une modale TabBar est ouverte
+  useEffect(() => {
+    if (showOptionsModal || showAutoSuggestModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showOptionsModal, showAutoSuggestModal]);
+
   if (location.pathname.startsWith('/mnccadmin')) {
     return null;
   }

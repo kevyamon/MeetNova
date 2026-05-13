@@ -222,9 +222,9 @@
   position: fixed;
   inset: 0;
   z-index: 3000;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(5, 5, 8, 0.85); /* Fond plus assombri */
+  backdrop-filter: blur(16px); /* Flou arrière nettement plus intense */
+  -webkit-backdrop-filter: blur(16px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -234,25 +234,28 @@
 
 .tabbar-modal {
   width: 100%;
-  max-width: 340px;
-  padding: 1.8rem;
+  max-width: 350px;
+  padding: 2rem;
   text-align: center;
-  border-radius: 20px;
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  border-radius: 24px;
+  background: rgba(20, 20, 25, 0.95); /* Carte plus dense et opaque */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
 }
 
 .tabbar-modal h3 {
-  font-size: 1.3rem;
-  margin-bottom: 0.8rem;
-  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #ffffff; /* Titre en blanc pur */
 }
 
 .tabbar-modal .modal-desc {
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85); /* Textes avec visibilité maximale */
   margin-bottom: 1.5rem;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .modal-actions-column {
