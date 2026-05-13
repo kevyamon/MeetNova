@@ -182,12 +182,34 @@
 
 /* Success Card */
 .result-success {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.15) 0%, rgba(10, 10, 12, 0.8) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  box-shadow: 0 20px 50px rgba(16, 185, 129, 0.2), inset 0 0 20px rgba(16, 185, 129, 0.1);
+  backdrop-filter: blur(12px);
+  animation: cardSuccessReveal 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes cardSuccessReveal {
+  0% { opacity: 0; transform: scale(0.9) translateY(40px); box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+  50% { opacity: 1; transform: scale(1.02) translateY(-5px); box-shadow: 0 30px 60px rgba(16, 185, 129, 0.4); }
+  100% { opacity: 1; transform: scale(1) translateY(0); box-shadow: 0 20px 50px rgba(16, 185, 129, 0.2); }
 }
 
 .result-success::before {
-  box-shadow: 0 0 60px rgba(16, 185, 129, 0.4);
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 150%; height: 150%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  animation: successPulseBg 3s ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes successPulseBg {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
 }
 
 .result-icon {
@@ -195,55 +217,50 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   margin-bottom: 1.5rem;
   color: var(--success);
-  animation: iconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.4);
+  animation: iconSuccessPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
 }
 
-@keyframes iconPop {
-  from {
-    opacity: 0;
-    transform: scale(0) rotate(-180deg);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
+@keyframes iconSuccessPop {
+  0% { opacity: 0; transform: scale(0) rotate(-180deg); }
+  60% { opacity: 1; transform: scale(1.2) rotate(10deg); box-shadow: 0 0 50px rgba(16, 185, 129, 0.8); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
 .result-icon::after {
   content: '';
   position: absolute;
-  inset: -10px;
+  inset: -15px;
   border-radius: 50%;
-  border: 3px solid var(--success);
-  animation: checkRing 0.6s ease-out 0.4s forwards;
-  opacity: 0;
-  transform: scale(0.5);
+  border: 2px solid var(--success);
+  animation: rippleSuccess 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
 }
 
-@keyframes checkRing {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+@keyframes rippleSuccess {
+  0% { transform: scale(0.8); opacity: 1; border-width: 4px; }
+  100% { transform: scale(1.5); opacity: 0; border-width: 0px; }
 }
 
 .result-success h2 {
   font-size: 1.8rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, var(--success), #34d399);
+  background: linear-gradient(135deg, #10b981, #34d399, #a7f3d0);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: textFade 0.5s ease 0.3s both;
+  text-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
 }
 
 @keyframes textFade {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 

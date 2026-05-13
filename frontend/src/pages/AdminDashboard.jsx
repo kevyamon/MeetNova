@@ -242,13 +242,6 @@ const AdminDashboard = () => {
           </div>
           <div className="header-actions">
             <button 
-              className="btn-secondary" 
-              onClick={() => navigate('/mnccadmin/presents')}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-              <Users size={20} /> <span className="hide-mobile">Présents</span>
-            </button>
-            <button 
               className="btn-primary add-btn" 
               onClick={() => activeTab === 'events' ? openModal() : setIsNewsModalOpen(true)}
             >

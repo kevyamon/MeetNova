@@ -110,9 +110,18 @@ const Scan = () => {
   return (
     <div className="scan-page">
       <main className="container-small scan-container">
-        <header className="scan-header-v2 anim-fade-down">
-          <h1>Vérificateur de Pass</h1>
-          <p>NovaTech Event Access Control</p>
+        <header className="scan-header-v2 anim-fade-down" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+          <div style={{ textAlign: 'left' }}>
+            <h1>Vérificateur</h1>
+            <p>NovaTech Access Control</p>
+          </div>
+          <button 
+            className="btn-secondary" 
+            onClick={() => navigate('/mnccadmin/presents')}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.8rem 1.2rem', borderRadius: '12px' }}
+          >
+            <User size={18} /> Présents
+          </button>
         </header>
 
         <div className="mode-switcher glass">
@@ -131,30 +140,28 @@ const Scan = () => {
         </div>
 
         <div className="scan-card-v2 glass anim-scale-in">
-          {mode === 'code' ? (
-            <div className="mode-content">
-              <div className="input-group-v2">
-                <input 
-                  type="text" 
-                  value={uuid}
-                  onChange={(e) => setUuid(e.target.value)}
-                  placeholder="Coller l'UUID du billet..."
-                  autoFocus
-                />
-                <button 
-                  className="btn-primary validate-btn" 
-                  onClick={(e) => handleValidate(e)}
-                  disabled={status === 'loading' || !uuid}
-                >
-                  {status === 'loading' ? <RefreshCcw className="icon-spin" /> : 'Vérifier'}
-                </button>
-              </div>
+          <div className="mode-content" style={{ display: mode === 'code' ? 'block' : 'none' }}>
+            <div className="input-group-v2">
+              <input 
+                type="text" 
+                value={uuid}
+                onChange={(e) => setUuid(e.target.value)}
+                placeholder="Coller l'UUID du billet..."
+                autoFocus={mode === 'code'}
+              />
+              <button 
+                className="btn-primary validate-btn" 
+                onClick={(e) => handleValidate(e)}
+                disabled={status === 'loading' || !uuid}
+              >
+                {status === 'loading' ? <RefreshCcw className="icon-spin" /> : 'Vérifier'}
+              </button>
             </div>
-          ) : (
-            <div className="mode-content scanner-mode">
-              <div id="qr-reader" style={{ width: '100%', borderRadius: '10px', overflow: 'hidden' }}></div>
-            </div>
-          )}
+          </div>
+
+          <div className="mode-content scanner-mode" style={{ display: mode === 'scanner' ? 'block' : 'none' }}>
+            <div id="qr-reader" style={{ width: '100%', borderRadius: '10px', overflow: 'hidden' }}></div>
+          </div>
 
           <div className="status-display">
             {status === 'success' && result && (

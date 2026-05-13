@@ -39,13 +39,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Permet le passage à la ligne si nécessaire */
+  flex-wrap: wrap;
   gap: 1.5rem;
   margin-bottom: 2rem;
   background: rgba(255, 255, 255, 0.03);
   padding: 1.5rem 2rem;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 600px) {
@@ -59,8 +65,14 @@
     font-size: 1.5rem;
   }
   
-  .add-btn {
+  .header-actions {
     width: 100%;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .header-actions button {
+    flex: 1;
     justify-content: center;
   }
 }
@@ -74,7 +86,10 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  width: fit-content;
+  width: 100%;
+  max-width: max-content;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .admin-tabs-v2 button {
