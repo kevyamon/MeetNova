@@ -32,6 +32,18 @@ const Navigation = () => {
     }
   };
 
+  const handleMobileInstallClick = () => {
+    if (canInstall) {
+      installPWA();
+    } else {
+      toast(
+        "L'application est déjà installée ou l'installation automatique n'est pas disponible. Utilisez le menu du navigateur (Ajouter à l'écran d'accueil).", 
+        "info",
+        6000
+      );
+    }
+  };
+
   return (
     <>
       {/* Mobile TabBar */}
@@ -42,19 +54,18 @@ const Navigation = () => {
             <span>Événements</span>
           </NavLink>
 
+          {/* Bouton d'installation persistant au centre */}
+          <button onClick={handleMobileInstallClick} className="nav-item install-btn">
+            <div className="install-icon-wrapper">
+              <Smartphone size={24} />
+            </div>
+            <span>Installer</span>
+          </button>
+
           <NavLink to="/news" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={(e) => handleTabClick(e, '/news')}>
             <Newspaper size={24} />
             <span>Actualités</span>
           </NavLink>
-
-          {canInstall && (
-            <button onClick={installPWA} className="nav-item install-btn">
-              <div className="install-icon-wrapper">
-                <Smartphone size={24} />
-              </div>
-              <span>Installer</span>
-            </button>
-          )}
         </div>
       </nav>
 

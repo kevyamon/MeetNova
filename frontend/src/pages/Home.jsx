@@ -1,13 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Calendar, MapPin, ArrowRight, Sparkles, Clock, Map } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import socket from '../services/socket';
 import './Home.css';
 
 const Home = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const timerRef = useRef(null);
+
+  const handlePressStart = () => {
+    timerRef.current = setTimeout(() => {
+      navigate('/mnccadmin');
+    }, 5000); // 5 secondes de pression continue
+  };
+
+  const handlePressEnd = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  // Nettoyage de sécurité si le composant est démonté pendant l'appui
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     socket.on('event:created', () => {
@@ -120,6 +142,24 @@ const Home = () => {
           )}
         </div>
       </main>
+
+      {/* Footer / Admin Access Discreet (5s Long Press) */}
+      <footer style={{ textAlign: 'center', padding: '3rem 1rem 8rem', opacity: 0.4, fontSize: '0.8rem' }}>
+        <p>
+          © {new Date().getFullYear()}{' '}
+          <span 
+            onMouseDown={handlePressStart}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onTouchStart={handlePressStart}
+            onTouchEnd={handlePressEnd}
+            style={{ cursor: 'pointer', userSelect: 'none', WebkitUserSelect: 'none' }}
+          >
+            MeetNova
+          </span>
+          . Tous droits réservés.
+        </p>
+      </footer>
     </div>
   );
 };
